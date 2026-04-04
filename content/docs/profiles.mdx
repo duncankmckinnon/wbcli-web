@@ -1,0 +1,129 @@
+---
+title: Profiles
+description: Save per-project agent configurations with profiles — assign agents to roles and customize directives.
+order: 5
+---
+
+## What Are Profiles
+
+Profiles let you save per-project agent configurations. Instead of passing `--reviewer-directive` or configuring `agents.yaml` manually each time, a profile stores your preferred setup so it persists across runs.
+
+A profile defines:
+
+- Which agent handles each role (implementor, tester, reviewer, fixer)
+- Custom directives for each role
+
+## Creating a Profile
+
+Initialize a default profile:
+
+```bash
+wb profile init
+```
+
+This creates `.workbench/profile.yaml` with the default configuration:
+
+```yaml
+# .workbench/profile.yaml
+implementor:
+  agent: claude
+  directive: ""
+tester:
+  agent: claude
+  directive: ""
+reviewer:
+  agent: claude
+  directive: ""
+fixer:
+  agent: claude
+  directive: ""
+```
+
+All roles default to Claude Code with no custom directives.
+
+## Assigning Agents to Roles
+
+Use `wb profile set` to change which agent handles a role:
+
+```bash
+wb profile set implementor gemini
+```
+
+```bash
+wb profile set reviewer claude
+```
+
+```bash
+wb profile set tester codex
+```
+
+After running these commands, your profile would look like:
+
+```yaml
+implementor:
+  agent: gemini
+  directive: ""
+tester:
+  agent: codex
+  directive: ""
+reviewer:
+  agent: claude
+  directive: ""
+fixer:
+  agent: claude
+  directive: ""
+```
+
+## Viewing Your Profile
+
+Display the current profile configuration:
+
+```bash
+wb profile show
+```
+
+Example output:
+
+```
+$ wb profile show
+Profile: .workbench/profile.yaml
+
+  implementor:  gemini
+  tester:       codex
+  reviewer:     claude
+  fixer:        claude
+
+Directives:
+  (none configured)
+```
+
+## Comparing to Defaults
+
+See what you have changed from the default profile:
+
+```bash
+wb profile diff
+```
+
+Example output:
+
+```
+$ wb profile diff
+Profile differences from default:
+
+  implementor:  claude → gemini
+  tester:       claude → codex
+```
+
+Only changed values are shown. If your profile matches the defaults, the output will be empty.
+
+## When to Use Profiles
+
+Different projects benefit from different agent configurations. Profiles make it easy to save and switch between setups:
+
+- **Speed-optimized** — use Gemini for implementation (faster output) and Claude for review (thorough analysis)
+- **Cost-optimized** — use a less expensive agent for testing and fixing, reserve the most capable agent for implementation
+- **Provider diversity** — spread work across providers to avoid rate limits on large plans
+- **Team consistency** — commit `.workbench/profile.yaml` to the repo so every team member uses the same agent configuration
+
+Profiles are read automatically by `wb run`. CLI flags like `--reviewer-directive` still work and override profile values for that specific run.

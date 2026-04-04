@@ -1,0 +1,120 @@
+---
+title: Agents
+description: Configure which AI agents handle implementation, testing, and review in your workbench pipeline.
+order: 4
+---
+
+## Supported Agents
+
+Workbench supports three agent CLIs out of the box:
+
+| Agent | Command | Provider |
+|---|---|---|
+| Claude Code | `claude` | Anthropic |
+| Gemini CLI | `gemini` | Google |
+| OpenAI Codex | `codex` | OpenAI |
+
+Each agent goes through the same pipeline stages: **implement → test → review → fix**. Workbench treats all agents as interchangeable — any agent can fill any role.
+
+## Default Agent
+
+Claude Code is the default agent for all roles. If you have the `claude` command installed and authenticated, workbench works with zero configuration.
+
+```bash
+# Just works — Claude Code handles everything
+wb run plan.md
+```
+
+## Multi-Provider Setup
+
+To use different agents for different roles, create a `.workbench/agents.yaml` file in your project root:
+
+```yaml
+implementor: claude
+tester: gemini
+reviewer: claude
+```
+
+This configuration uses Claude Code for implementation and review, and Gemini CLI for testing. You can mix and match providers however you like.
+
+The available role assignments are:
+
+| Role | Description |
+|---|---|
+| `implementor` | Writes the code for each task |
+| `tester` | Runs and writes tests to verify the implementation |
+| `reviewer` | Reviews the diff and flags issues |
+| `fixer` | Addresses test failures and review feedback |
+
+Set any role to `claude`, `gemini`, or `codex`:
+
+```yaml
+implementor: gemini
+tester: codex
+reviewer: claude
+fixer: claude
+```
+
+## Custom Agents
+
+You can register any CLI tool as a workbench agent. In `.workbench/agents.yaml`, define a custom agent with its command, arguments, and environment:
+
+```yaml
+implementor:
+  command: my-agent
+  args: ["--mode", "code"]
+  env:
+    MY_AGENT_API_KEY: "${MY_AGENT_API_KEY}"
+    MY_AGENT_MODEL: "latest"
+
+tester: claude
+reviewer: claude
+```
+
+The custom agent receives the task prompt via stdin and must write its response to stdout. Workbench handles worktree setup, file management, and git operations — the agent only needs to read the prompt and produce code.
+
+## Directive Overrides
+
+Override agent instructions from the CLI without modifying your plan file:
+
+```bash
+wb run plan.md --reviewer-directive "Focus on security vulnerabilities and input validation"
+```
+
+```bash
+wb run plan.md --tester-directive "Use pytest -x --tb=short for faster feedback"
+```
+
+Directives are appended to the default role prompts. You can combine them:
+
+```bash
+wb run plan.md \
+  --reviewer-directive "Enforce strict type safety, no any types" \
+  --tester-directive "Include edge case tests for empty inputs and null values"
+```
+
+This is useful for one-off adjustments without changing your profile or plan. For persistent customization, use [profiles](/docs/profiles).
+
+## Agent Roles
+
+Workbench assigns agents to five pipeline roles. Each role has a specific job in the task lifecycle:
+
+### Implementor
+
+Receives the task description, context, and conventions. Writes the code to fulfill the task. This is the primary coding agent.
+
+### Tester
+
+Runs the project's test suite against the implementation. If tests are missing, the tester writes them. In TDD mode, the tester runs first and writes failing tests before implementation begins.
+
+### Reviewer
+
+Reviews the git diff produced by the implementor. Checks for correctness, style adherence, and potential issues. Reports pass/fail with actionable feedback.
+
+### Fixer
+
+Activated when the tester or reviewer reports failures. Receives the failure output and attempts to fix the issues. Runs up to `--max-retries` times (default: 2).
+
+### Merger
+
+A special role that handles merge conflicts when parallel task branches are combined. The merger receives the conflict markers and both sides of the diff, then produces a clean resolution. This role is always handled by the default agent.

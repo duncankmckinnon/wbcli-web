@@ -1,0 +1,195 @@
+---
+title: CLI Reference
+description: Complete reference for all workbench CLI commands and flags.
+order: 3
+---
+
+## wb run
+
+The primary command. Parses a plan, creates isolated git worktrees, and dispatches agents in parallel.
+
+```bash
+wb run <plan.md> [options]
+```
+
+### Flags
+
+| Flag | Description |
+|---|---|
+| `--tdd` | Enable test-driven development mode — tests are written before implementation |
+| `--skip-test` | Skip the test stage of the pipeline |
+| `--skip-review` | Skip the review stage of the pipeline |
+| `--base <branch>` | Branch from a specific branch instead of the default (usually `main`) |
+| `--local` | Use the local branch ref instead of fetching from origin |
+| `-b <branch>`, `--session-branch <branch>` | Resume a previous session branch |
+| `-w <N>`, `--start-wave <N>` | Start from a specific wave number (for resuming interrupted runs) |
+| `--max-retries <N>` | Maximum fix attempts per task (default: 2) |
+| `--reviewer-directive "<text>"` | Custom instructions appended to the reviewer agent prompt |
+| `--tester-directive "<text>"` | Custom instructions appended to the tester agent prompt |
+
+### Examples
+
+Run a plan with default settings:
+
+```bash
+wb run plan.md
+```
+
+Run with TDD mode and skip the review stage:
+
+```bash
+wb run plan.md --tdd --skip-review
+```
+
+Resume a previously interrupted session from wave 3:
+
+```bash
+wb run plan.md -b wb/my-feature -w 3
+```
+
+Add custom reviewer instructions:
+
+```bash
+wb run plan.md --reviewer-directive "Focus on error handling and edge cases"
+```
+
+## wb preview
+
+Dry-run a plan. Shows parsed tasks, the dependency graph, and wave assignments without executing any code or creating worktrees.
+
+```bash
+wb preview <plan.md>
+```
+
+### Example Output
+
+```
+$ wb preview plan.md
+Plan: plan.md
+Tasks: 4
+Waves: 2
+
+Wave 1:
+  ├── database-schema
+  │   Files: prisma/schema.prisma
+  └── auth-utils
+      Files: src/lib/auth.ts
+
+Wave 2:
+  ├── user-routes
+  │   Files: src/routes/users.ts
+  │   Depends: database-schema
+  └── auth-routes
+      Files: src/routes/auth.ts
+      Depends: database-schema, auth-utils
+
+⚠ No file overlaps detected
+```
+
+## wb status
+
+Shows active workbench sessions, running agents, and worktree status.
+
+```bash
+wb status
+```
+
+### Example Output
+
+```
+$ wb status
+Session: wb/feature-auth (started 2m ago)
+Wave 2 of 2 in progress
+
+  ✓ database-schema .... done     8.2s
+  ✓ auth-utils ......... done    11.4s
+  ⟳ user-routes ........ testing
+  ⟳ auth-routes ........ reviewing
+
+Worktrees: 4 active
+```
+
+## wb stop
+
+Kill all active agent sessions and stop the current run.
+
+```bash
+wb stop [--cleanup]
+```
+
+| Flag | Description |
+|---|---|
+| `--cleanup` | Also remove worktrees and session branches created by the run |
+
+## wb clean
+
+Remove all workbench-created git worktrees. Useful for reclaiming disk space after a run or cleaning up after interrupted sessions.
+
+```bash
+wb clean
+```
+
+This removes only worktrees that were created by workbench (identified by the `wb/` branch prefix). Your working directory is never affected.
+
+## wb setup
+
+Initialize a repository for workbench. Creates the `.workbench/` directory with default configuration.
+
+```bash
+wb setup
+```
+
+Run this once in any git repo before using workbench. If the `.workbench/` directory already exists, this command is a no-op.
+
+## wb init
+
+Install workbench skill files for your agent platform. Skills are prompt extensions that help agents understand the workbench pipeline and produce better results.
+
+```bash
+wb init
+```
+
+This detects your installed agent CLIs and installs the appropriate skill files. Re-run after installing a new agent CLI.
+
+## wb profile
+
+Manage agent profiles — saved configurations for which agent handles which role.
+
+### wb profile init
+
+Create a default profile in `.workbench/profile.yaml`:
+
+```bash
+wb profile init
+```
+
+### wb profile set
+
+Assign an agent to a specific role:
+
+```bash
+wb profile set <role> <agent>
+```
+
+Roles: `implementor`, `tester`, `reviewer`, `fixer`
+
+```bash
+wb profile set implementor gemini
+wb profile set reviewer claude
+```
+
+### wb profile show
+
+Display the current profile configuration:
+
+```bash
+wb profile show
+```
+
+### wb profile diff
+
+Show differences between your current profile and the default:
+
+```bash
+wb profile diff
+```
