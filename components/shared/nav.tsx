@@ -101,7 +101,7 @@ export function Nav() {
 
       {/* Mobile dropdown */}
       {mobileMenuOpen && (
-        <div className="border-t border-brand-bg-tertiary px-4 pb-4 pt-2 md:hidden">
+        <div data-testid="mobile-menu" className="border-t border-brand-bg-tertiary px-4 pb-4 pt-2 md:hidden">
           <div className="flex flex-col gap-3">
             <Link
               href="/docs"

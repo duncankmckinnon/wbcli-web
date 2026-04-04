@@ -68,11 +68,8 @@ describe("Nav", () => {
   });
 
   it("does not show mobile dropdown by default", () => {
-    const { container } = render(<Nav />);
-    const mobileDropdown = container.querySelector(
-      ".border-t.border-brand-bg-tertiary.px-4"
-    );
-    expect(mobileDropdown).not.toBeInTheDocument();
+    render(<Nav />);
+    expect(screen.queryByTestId("mobile-menu")).not.toBeInTheDocument();
   });
 
   it("opens mobile menu when hamburger is clicked", async () => {
