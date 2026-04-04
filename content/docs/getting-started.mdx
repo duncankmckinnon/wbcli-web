@@ -1,0 +1,137 @@
+---
+title: Getting Started
+description: Install workbench and run your first multi-agent plan in under five minutes.
+order: 1
+---
+
+## Prerequisites
+
+Before installing workbench, make sure you have the following:
+
+- **Python 3.11+** — verify with `python3 --version`
+- **Git** — workbench uses git worktrees for task isolation
+- **At least one supported agent CLI:**
+  - [Claude Code](https://docs.anthropic.com/en/docs/claude-code) — `claude` command
+  - [Gemini CLI](https://github.com/google-gemini/gemini-cli) — `gemini` command
+  - [OpenAI Codex](https://github.com/openai/codex) — `codex` command
+
+Your agent CLI must be installed and authenticated separately. Workbench dispatches work to these agents — it does not bundle them.
+
+## Installation
+
+Install workbench from PyPI:
+
+```bash
+pip install wbcli
+```
+
+This installs the `wb` command globally. Verify the installation:
+
+```bash
+wb --version
+```
+
+## Project Setup
+
+Navigate to any git repository and run:
+
+```bash
+wb setup
+```
+
+This creates a `.workbench/` directory with default configuration and installs agent skill files:
+
+```
+$ wb setup
+✓ Created .workbench/ directory
+✓ Generated default profile
+✓ Installed skill files for claude
+Ready to go — write a plan and run `wb run plan.md`
+```
+
+## Your First Plan
+
+Create a file called `plan.md` in your project root:
+
+````markdown
+## Context
+
+We are building a Node.js utility library. The project uses TypeScript
+and Jest for testing.
+
+## Conventions
+
+- TypeScript strict mode
+- Functions should be exported as named exports
+- Tests live next to source files with `.test.ts` suffix
+- Use descriptive test names with `it("should ...")`
+
+## Task: String Utils
+
+Create a string utility module with helper functions.
+
+Files: src/string-utils.ts, src/string-utils.test.ts
+
+Implement the following functions:
+
+- `capitalize(str: string): string` — capitalize the first letter
+- `slugify(str: string): string` — convert to URL-safe slug
+- `truncate(str: string, maxLength: number): string` — truncate with ellipsis
+
+Include tests for each function covering edge cases (empty string, already capitalized, etc).
+
+## Task: Array Utils
+
+Create an array utility module with helper functions.
+
+Files: src/array-utils.ts, src/array-utils.test.ts
+
+Implement the following functions:
+
+- `unique<T>(arr: T[]): T[]` — return unique elements preserving order
+- `chunk<T>(arr: T[], size: number): T[][]` — split array into chunks
+- `groupBy<T>(arr: T[], key: keyof T): Record<string, T[]>` — group by key
+
+Include tests for each function covering edge cases (empty array, single element, etc).
+````
+
+Both tasks are independent — no shared files, no dependencies — so workbench will run them in parallel.
+
+## Running the Plan
+
+Execute the plan:
+
+```bash
+wb run plan.md
+```
+
+Workbench parses the tasks, creates isolated git worktrees, and dispatches agents in parallel:
+
+```
+$ wb run plan.md
+Parsed 2 tasks across 1 wave
+
+Wave 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ⟳ string-utils .............. implementing
+  ⟳ array-utils ............... implementing
+  ✓ string-utils .............. tested     12.4s
+  ✓ array-utils ............... tested     14.1s
+
+✓ All tasks complete — 2/2 passed (26.8s)
+Merging branches into main...
+✓ Merged successfully
+```
+
+To preview the plan without running anything:
+
+```bash
+wb preview plan.md
+```
+
+This shows the parsed tasks, dependency graph, and wave assignments without executing any code.
+
+## What's Next
+
+- **[Plan Format](/docs/plan-format)** — learn about dependencies, waves, and advanced plan structure
+- **[CLI Reference](/docs/cli-reference)** — explore all commands and flags
+- **[Agents](/docs/agents)** — configure multi-provider setups with Claude, Gemini, and Codex
