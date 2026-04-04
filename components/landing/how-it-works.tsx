@@ -1,4 +1,6 @@
-const steps = [
+import type { ReactNode } from "react";
+
+const steps: { number: string; title: string; description: ReactNode; icon: ReactNode }[] = [
   {
     number: "1",
     title: "Write a plan",
