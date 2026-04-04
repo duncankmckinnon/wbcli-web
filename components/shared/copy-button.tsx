@@ -4,7 +4,7 @@ import { useState, useCallback } from "react";
 
 export function CopyButton({
   text,
-  className,
+  className = "",
 }: {
   text: string;
   className?: string;
@@ -21,11 +21,12 @@ export function CopyButton({
     <button
       type="button"
       onClick={handleCopy}
-      className={`inline-flex items-center justify-center rounded-md p-2 text-brand-text-secondary hover:text-brand-text-primary transition-colors ${className ?? ""}`}
+      className={`inline-flex items-center justify-center rounded-md p-2 text-brand-text-secondary hover:text-brand-text-primary transition-colors ${className}`}
       aria-label={copied ? "Copied" : "Copy to clipboard"}
     >
       {copied ? (
         <svg
+          xmlns="http://www.w3.org/2000/svg"
           width="16"
           height="16"
           viewBox="0 0 24 24"
@@ -39,6 +40,7 @@ export function CopyButton({
         </svg>
       ) : (
         <svg
+          xmlns="http://www.w3.org/2000/svg"
           width="16"
           height="16"
           viewBox="0 0 24 24"
@@ -48,8 +50,8 @@ export function CopyButton({
           strokeLinecap="round"
           strokeLinejoin="round"
         >
-          <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+          <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+          <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
         </svg>
       )}
     </button>
