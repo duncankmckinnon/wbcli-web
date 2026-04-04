@@ -1,0 +1,129 @@
+---
+title: TDD Mode
+description: Run workbench in test-driven development mode — tests are written before implementation.
+order: 6
+---
+
+## Overview
+
+TDD mode inverts the normal workbench pipeline. Instead of the standard **implement → test → review → fix** flow, TDD mode runs **test → implement → test → review → fix**.
+
+The tester agent writes comprehensive failing tests first based on the task description. Then the implementor agent writes code to make those tests pass. This produces implementations that are verifiably correct from the start.
+
+## Usage
+
+Enable TDD mode with the `--tdd` flag:
+
+```bash
+wb run plan.md --tdd
+```
+
+Combine with other flags as needed:
+
+```bash
+wb run plan.md --tdd --base develop
+```
+
+```bash
+wb run plan.md --tdd --skip-review --max-retries 3
+```
+
+## How It Works
+
+TDD mode adds an extra stage at the beginning of each task's pipeline:
+
+### Step 1: Test First
+
+The **tester agent** receives the task description and writes failing tests that specify the expected behavior. These tests define the contract the implementation must satisfy.
+
+```
+⟳ user-service ............ writing tests
+```
+
+### Step 2: Implement
+
+The **implementor agent** receives both the task description and the failing tests. Its goal is to write code that makes all tests pass.
+
+```
+⟳ user-service ............ implementing
+```
+
+### Step 3: Verify
+
+The **tester agent** runs the test suite to confirm all tests pass with the new implementation.
+
+```
+⟳ user-service ............ testing
+```
+
+### Step 4: Review
+
+The **reviewer agent** checks the implementation diff for correctness and code quality.
+
+```
+⟳ user-service ............ reviewing
+```
+
+### Step 5: Fix
+
+If tests fail or the reviewer flags issues, the **fixer agent** addresses the problems. This cycle repeats up to `--max-retries` times.
+
+```
+⟳ user-service ............ fixing
+```
+
+## Writing Plans for TDD
+
+Task descriptions in TDD plans should focus on **behavior specifications** rather than implementation details. The tester agent needs to know **what** the code should do, not **how**.
+
+### Standard task (implementation-focused)
+
+```markdown
+## Task: Email Validator
+
+Files: src/validators/email.ts, src/validators/email.test.ts
+
+Create an email validation function using a regex pattern.
+Use the RFC 5322 simplified pattern. Return a boolean.
+Export as `validateEmail`.
+```
+
+### TDD-optimized task (behavior-focused)
+
+```markdown
+## Task: Email Validator
+
+Files: src/validators/email.ts, src/validators/email.test.ts
+
+Create a `validateEmail(email: string): boolean` function that checks
+whether an email address is valid.
+
+Expected behavior:
+- Valid: `user@example.com`, `name+tag@domain.co.uk`, `user@123.123.123.123`
+- Invalid: `@missing-local.com`, `missing-at.com`, `user@`, `user@.com`, empty string
+- Should handle unicode local parts: `用户@example.com` → valid
+- Should reject emails longer than 254 characters
+- Should be case-insensitive for the domain part
+
+Test command: `npx vitest run src/validators/email.test.ts`
+```
+
+The TDD-optimized version gives the tester agent clear inputs and expected outputs, making it easy to write comprehensive tests without knowing the implementation approach.
+
+## When to Use TDD
+
+### Good fit for TDD
+
+- **Well-specified behaviors** — functions with clear inputs and outputs
+- **Critical business logic** — payment processing, authentication, data transformations
+- **Algorithm implementations** — sorting, searching, parsing
+- **API endpoints** — request/response contracts are naturally testable
+- **Bug fixes** — write a test that reproduces the bug, then fix it
+
+### Less useful for TDD
+
+- **Exploratory work** — when you don't yet know what the code should do
+- **UI components** — visual output is hard to specify as test assertions
+- **Configuration changes** — modifying config files, environment variables
+- **Infrastructure setup** — creating directories, installing dependencies
+- **Refactoring** — existing tests should already cover the behavior

@@ -1,0 +1,201 @@
+---
+title: Plan Format
+description: Reference for workbench plan structure — tasks, dependencies, waves, and best practices.
+order: 2
+---
+
+## Overview
+
+Plans are markdown files with a specific structure. Workbench parses them into a directed acyclic graph (DAG) of tasks, groups tasks into waves based on dependencies, and dispatches each wave in parallel.
+
+Any `.md` file that follows the plan format can be used — name it however you like.
+
+## Plan Structure
+
+Every plan has three types of top-level sections, each marked with `##`:
+
+### Context
+
+Project description and background. This section is injected into every agent's prompt, so each agent understands what it is working on.
+
+```markdown
+## Context
+
+We are building a REST API for a task management app. The backend
+uses Express with TypeScript and Prisma ORM connected to PostgreSQL.
+```
+
+### Conventions
+
+Coding standards and project rules. Also injected into every agent prompt. Use this to enforce consistency across parallel tasks.
+
+```markdown
+## Conventions
+
+- TypeScript strict mode, no `any` types
+- All endpoints return JSON with `{ data, error }` shape
+- Use Zod for request validation
+- Test with Vitest, colocate test files
+- Run tests with `npm test`
+```
+
+### Tasks
+
+Individual work items, each with a descriptive title:
+
+```markdown
+## Task: User Model
+
+Create the Prisma schema and database model for users.
+
+Files: prisma/schema.prisma, src/models/user.ts
+```
+
+A plan can contain any number of tasks. Each task runs in its own isolated git worktree with its own agent.
+
+## Task Metadata
+
+Tasks support two metadata fields, declared as lines at the start of the task body:
+
+### Files
+
+A comma-separated list of files the task creates or modifies. This is used to detect potential merge conflicts between parallel tasks.
+
+```markdown
+Files: src/routes/auth.ts, src/middleware/auth.ts, src/routes/auth.test.ts
+```
+
+**Alias:** `Scope:` is equivalent to `Files:`.
+
+### Depends
+
+A comma-separated list of task slugs this task depends on. Dependent tasks wait until their dependencies complete before starting.
+
+```markdown
+Depends: user-model, database-setup
+```
+
+**Aliases:** `After:` and `Dependencies:` are equivalent to `Depends:`.
+
+## Dependency Slugs
+
+Task titles are converted to slugs for use in `Depends:` fields. The conversion rule is: lowercase, replace non-alphanumeric characters with hyphens, collapse consecutive hyphens.
+
+| Task Title | Slug |
+|---|---|
+| User Model | `user-model` |
+| Auth Middleware | `auth-middleware` |
+| Database Setup | `database-setup` |
+| API Rate Limiting | `api-rate-limiting` |
+| CRUD Endpoints | `crud-endpoints` |
+
+## Waves
+
+Workbench sorts tasks into waves based on their dependency graph:
+
+- **Wave 1** — all tasks with no dependencies (run in parallel)
+- **Wave 2** — tasks whose dependencies are all in Wave 1 (run in parallel after Wave 1 completes)
+- **Wave 3** — tasks whose dependencies are all in Waves 1–2, and so on
+
+### Example
+
+Given four tasks:
+
+```markdown
+## Task: Database Schema
+Files: prisma/schema.prisma
+
+## Task: Auth Utils
+Files: src/lib/auth.ts
+
+## Task: User Routes
+Files: src/routes/users.ts
+Depends: database-schema
+
+## Task: Auth Routes
+Files: src/routes/auth.ts
+Depends: database-schema, auth-utils
+```
+
+Workbench assigns them to waves:
+
+```
+Wave 1 (parallel):
+  ├── database-schema
+  └── auth-utils
+
+Wave 2 (parallel, after Wave 1):
+  ├── user-routes      (depends on: database-schema)
+  └── auth-routes      (depends on: database-schema, auth-utils)
+```
+
+Both Wave 1 tasks run simultaneously. Once both finish, both Wave 2 tasks run simultaneously.
+
+## Writing Good Tasks
+
+Each task runs in isolation — the agent only sees its own task description plus the Context and Conventions sections. The agent does not see other tasks. This means every task must be self-contained.
+
+### Checklist for a good task
+
+- **What to build** — describe the feature or change clearly
+- **Where** — specify exact file paths
+- **How** — include function signatures, interfaces, or API shapes
+- **How it fits** — mention imports, interfaces, or contracts from other files the agent should use
+- **Test command** — how to verify the implementation works
+
+### Bad vs Good
+
+**Bad** — too vague, agent has to guess:
+
+```markdown
+## Task: Add Authentication
+
+Add auth to the app. Use JWT tokens.
+
+Files: src/auth.ts
+```
+
+**Good** — specific, self-contained:
+
+```markdown
+## Task: Auth Middleware
+
+Create Express middleware that validates JWT tokens on protected routes.
+
+Files: src/middleware/auth.ts, src/middleware/auth.test.ts
+
+Implement a `requireAuth` middleware function:
+- Extract the Bearer token from the `Authorization` header
+- Verify the token using `jsonwebtoken` with `process.env.JWT_SECRET`
+- Attach the decoded payload to `req.user` (type: `{ id: string; email: string }`)
+- Return 401 if the token is missing or invalid
+
+The `User` type is exported from `src/models/user.ts` (created in an earlier wave).
+
+Test with: `npx vitest run src/middleware/auth.test.ts`
+```
+
+## Avoiding Merge Conflicts
+
+Tasks running in the same wave execute in parallel on separate git branches. When the wave completes, workbench merges all branches together. If two tasks modify the same file, a merge conflict can occur.
+
+### Rules to avoid conflicts
+
+1. **Declare all files** — list every file a task touches in the `Files:` field. Workbench warns about overlapping files at parse time.
+2. **Don't share files in a wave** — if two tasks need the same file, add a dependency between them so they run in different waves.
+3. **Extract shared code into an earlier wave** — if multiple tasks need a shared utility, create it in Wave 1 and make the other tasks depend on it.
+
+```markdown
+## Task: Shared Types
+Files: src/types.ts
+
+## Task: User Service
+Files: src/services/user.ts
+Depends: shared-types
+
+## Task: Order Service
+Files: src/services/order.ts
+Depends: shared-types
+```
+
+Now both services can import from `src/types.ts` safely because it was created in an earlier wave.
