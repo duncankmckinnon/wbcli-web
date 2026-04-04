@@ -43,7 +43,7 @@ export default async function DocsPage({ params }: PageProps) {
 
   return (
     <div className="flex">
-      <article className="flex-1 max-w-3xl px-8 py-12">
+      <article className="flex-1 prose prose-invert max-w-3xl px-8 py-12">
         <h1 className="text-3xl font-bold text-brand-text-primary mb-2">
           {meta.title}
         </h1>
