@@ -44,5 +44,6 @@ export function extractHeadings(content: string): Heading[] {
     });
   }
 
+  
   return headings;
 }
