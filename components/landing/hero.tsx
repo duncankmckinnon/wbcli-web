@@ -19,14 +19,14 @@ export function Hero() {
       <div className="absolute inset-0 -z-10 bg-gradient-to-b from-brand-bg-primary via-brand-bg-primary to-brand-bg-secondary" />
 
       <div className="mx-auto max-w-4xl text-center">
-        <h1 className="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl leading-[1.1]">
+        <h1 className="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl leading-[1.3]">
           <span className="hero-line-1 block bg-gradient-to-r from-brand-accent-primary to-brand-accent-secondary bg-clip-text text-transparent">
             Ultra-lightweight
           </span>
           <span className="hero-line-2 block">
             Multi-agent Orchestrator
           </span>
-          <span className="hero-line-3 block uppercase tracking-wider">
+          <span className="hero-line-3 block bg-gradient-to-r from-brand-accent-secondary to-brand-accent-tertiary bg-clip-text text-transparent">
             Anywhere you work
           </span>
         </h1>
