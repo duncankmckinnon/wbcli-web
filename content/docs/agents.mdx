@@ -6,28 +6,24 @@ order: 4
 
 ## Supported Agents
 
-Workbench supports three agent CLIs out of the box, plus any custom CLI via `.workbench/agents.yaml`:
+Workbench ships with built-in adapters for four agent CLIs, plus support for any custom CLI:
 
 | Agent | Command | Provider |
 |---|---|---|
 | Claude Code | `claude` | Anthropic |
 | Gemini CLI | `gemini` | Google |
 | OpenAI Codex | `codex` | OpenAI |
+| Cursor CLI | `cursor` | Cursor |
 
 Each agent goes through the same pipeline stages: **implement → test → review → fix**. Workbench treats all agents as interchangeable — any agent can fill any role.
 
-## Default Agent
-
-Claude Code is the default agent for all roles. If you have the `claude` command installed and authenticated, workbench works with zero configuration:
+Use `--agent` to select which agent to use:
 
 ```bash
-wb run plan.md
-```
-
-You can also specify the agent directly:
-
-```bash
-wb run plan.md --agent claude
+wb run plan.md --agent claude     # default
+wb run plan.md --agent gemini
+wb run plan.md --agent codex
+wb run plan.md --agent cursor
 ```
 
 ## Setting Up Agents
@@ -38,11 +34,74 @@ Use `wb setup` to install agent skill files for your platform:
 wb setup                           # auto-detect agent, install skills locally
 wb setup --agent claude            # install to <repo>/.claude/skills/ + .agents/skills/
 wb setup --agent gemini            # install to <repo>/.agents/skills/
+wb setup --agent cursor            # install to <repo>/.cursor/skills/
 wb setup --agent manual            # print paths for manual setup
 wb setup --global                  # install skills to user-level paths only
 wb setup --global --agent claude   # install to ~/.claude/skills/
+wb setup --symlink                 # symlink instead of copy (stays in sync with updates)
+wb setup --update                  # force-update skills to the latest version
 wb setup --profile                 # also create a profile.yaml with the detected agent
 ```
+
+If the skill file already exists and is unchanged, it's skipped. If it differs, you'll be prompted before overwriting.
+
+## Managing Agents
+
+Use the `wb agents` commands to view, add, and configure agent adapters:
+
+```bash
+wb agents init                    # create agents.yaml with all built-in adapter configs
+wb agents list                    # show built-in and custom agents
+wb agents show my-agent           # show full config for an agent
+wb agents add my-agent --command my-cli --args "--headless,{prompt}"
+wb agents add my-agent --command new-cli   # update an existing agent
+wb agents remove my-agent         # remove a custom agent
+```
+
+`wb agents init` creates `.workbench/agents.yaml` pre-populated with the configs for all built-in adapters (Claude, Gemini, Codex, Cursor). Use this as a starting point to customize command flags, output parsing, or to add your own agents.
+
+## Custom Agents
+
+Define adapters for any CLI tool using the `wb agents add` command or by editing `.workbench/agents.yaml` directly:
+
+```bash
+wb agents add my-agent --command my-cli --args "--headless,{prompt}" --output-format json
+wb run plan.md --agent my-agent
+```
+
+This creates an entry in `.workbench/agents.yaml`:
+
+```yaml
+agents:
+  my-agent:
+    command: my-cli
+    args: ["--headless", "{prompt}"]
+    output_format: json
+    json_result_key: result
+    json_cost_key: cost_usd
+```
+
+The `{prompt}` placeholder in `args` is replaced with the agent's prompt at runtime.
+
+### agents.yaml Fields
+
+| Field | Description |
+|---|---|
+| `command` | The CLI command to execute |
+| `args` | Arguments passed to the command. Use `{prompt}` as a placeholder for the task prompt |
+| `output_format` | How to parse the agent's output (`text` or `json`) |
+| `json_result_key` | When `output_format` is `json`, the key containing the agent's response |
+| `json_cost_key` | When `output_format` is `json`, the key containing the cost (optional) |
+
+### wb agents add Flags
+
+| Flag | Description |
+|---|---|
+| `--command CMD` | CLI command to invoke (required) |
+| `--args TEMPLATE` | Argument template, comma-separated (default: `{prompt}`) |
+| `--output-format FMT` | `text` or `json` (default: `text`) |
+| `--json-result-key KEY` | JSON key for result (default: `result`) |
+| `--json-cost-key KEY` | JSON key for cost (default: `cost_usd`) |
 
 ## Multi-Provider Setup
 
@@ -66,37 +125,7 @@ roles:
     agent: claude
 ```
 
-## Custom Agents
-
-Define adapters for any CLI tool in `.workbench/agents.yaml`:
-
-```yaml
-agents:
-  my-agent:
-    command: my-agent-cli
-    args: ["--headless", "{prompt}"]
-    output_format: json
-    json_result_key: result
-    json_cost_key: cost_usd
-```
-
-Then use it by name:
-
-```bash
-wb run plan.md --agent my-agent
-```
-
-### agents.yaml Fields
-
-| Field | Description |
-|---|---|
-| `command` | The CLI command to execute |
-| `args` | Arguments passed to the command. Use `{prompt}` as a placeholder for the task prompt |
-| `output_format` | How to parse the agent's output (`text` or `json`) |
-| `json_result_key` | When `output_format` is `json`, the key containing the agent's response |
-| `json_cost_key` | When `output_format` is `json`, the key containing the cost (optional) |
-
-You can also assign custom agents to specific roles via profiles:
+You can also assign custom agents to roles:
 
 ```bash
 wb profile set implementor.agent my-agent

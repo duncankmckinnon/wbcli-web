@@ -5,7 +5,7 @@ export function Logo({ className }: { className?: string }) {
   return (
     <Link href="/" className={`flex items-center gap-2 ${className ?? ""}`}>
       <Image
-        src="/logo.jpg"
+        src="/wb-logo-mini.png"
         alt="workbench logo"
         width={32}
         height={32}
