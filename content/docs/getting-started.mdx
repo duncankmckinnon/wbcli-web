@@ -25,11 +25,7 @@ Install workbench from PyPI:
 pip install wbcli
 ```
 
-This installs the `wb` command globally. Verify the installation:
-
-```bash
-wb --version
-```
+This installs the `wb` command globally.
 
 ## Project Setup
 
@@ -39,63 +35,89 @@ Navigate to any git repository and run:
 wb setup
 ```
 
-This creates a `.workbench/` directory with default configuration and installs agent skill files:
+If you have multiple agent platforms installed, workbench will ask you to choose:
 
 ```
 $ wb setup
-✓ Created .workbench/ directory
-✓ Generated default profile
-✓ Installed skill files for claude
-Ready to go — write a plan and run `wb run plan.md`
+Multiple agent platforms found. Choose one (claude, gemini): claude
+Created /path/to/your/project/.workbench/
+Installing 1 command(s) for claude...
+
+  Copied /use-workbench → /path/to/your/project/.claude/skills/use-workbench
+
+  Use in Claude Code: /use-workbench
+  Also installed to /path/to/your/project/.agents/skills for cross-client discoverability.
+
+Done. Installed 1 command(s) for claude.
+
+Repo is ready for workbench.
 ```
 
 ## Your First Plan
 
-Create a file called `plan.md` in your project root:
+Create a plan file (e.g. `plan.md` or `.workbench/plan.md`) with these sections:
 
 ````markdown
+# Plan Title
+
 ## Context
 
-We are building a Node.js utility library. The project uses TypeScript
-and Jest for testing.
+Describe what the project is, what you're building, and why.
+This is injected into every agent's prompt so they understand
+the codebase.
 
 ## Conventions
 
-- TypeScript strict mode
-- Functions should be exported as named exports
-- Tests live next to source files with `.test.ts` suffix
-- Use descriptive test names with `it("should ...")`
+List the coding standards agents should follow:
+- Language and framework versions
+- Naming conventions, import style
+- Test framework and test command
+- Any project-specific patterns
 
-## Task: String Utils
+## Task: Short Title
+Files: path/to/file1, path/to/file2
 
-Create a string utility module with helper functions.
+Detailed description of what to implement. Be specific —
+the agent only sees its own task, not the rest of the plan.
+Include function signatures, expected behavior, and edge cases.
 
-Files: src/string-utils.ts, src/string-utils.test.ts
+## Task: Another Task
+Files: path/to/other/files
+Depends: short-title
 
-Implement the following functions:
-
-- `capitalize(str: string): string` — capitalize the first letter
-- `slugify(str: string): string` — convert to URL-safe slug
-- `truncate(str: string, maxLength: number): string` — truncate with ellipsis
-
-Include tests for each function covering edge cases (empty string, already capitalized, etc).
-
-## Task: Array Utils
-
-Create an array utility module with helper functions.
-
-Files: src/array-utils.ts, src/array-utils.test.ts
-
-Implement the following functions:
-
-- `unique<T>(arr: T[]): T[]` — return unique elements preserving order
-- `chunk<T>(arr: T[], size: number): T[][]` — split array into chunks
-- `groupBy<T>(arr: T[], key: keyof T): Record<string, T[]>` — group by key
-
-Include tests for each function covering edge cases (empty array, single element, etc).
+Another task description. The Depends line means this task
+waits until "Short Title" completes before starting.
+Tasks without dependencies run in parallel.
 ````
 
-Both tasks are independent — no shared files, no dependencies — so workbench will run them in parallel.
+Tasks with no shared files and no `Depends:` line run in parallel. Tasks that depend on earlier work wait until those tasks complete.
+
+## Previewing the Plan
+
+Before running, preview the plan to verify tasks and waves:
+
+```bash
+wb preview plan.md
+```
+
+This parses the plan and shows the task graph without executing anything:
+
+```
+$ wb preview plan.md
+
+Wave 1 (1 tasks, run in parallel)
+  • Short Title
+    Files: path/to/file1, path/to/file2
+    Detailed description of what to implement...
+
+Wave 2 (1 tasks, run in parallel)
+  • Another Task
+    Files: path/to/other/files
+    After: short-title
+    Another task description...
+```
+
+Use this to check that dependencies are correct and tasks are grouped into the right waves before dispatching agents.
 
 ## Running the Plan
 
@@ -105,30 +127,62 @@ Execute the plan:
 wb run plan.md
 ```
 
-Workbench parses the tasks, creates isolated git worktrees, and dispatches agents in parallel:
+Workbench parses the tasks, creates isolated git worktrees, and dispatches agents in parallel. Each task goes through a pipeline of roles — implement, test, review — with automatic fixing if anything fails:
 
 ```
 $ wb run plan.md
-Parsed 2 tasks across 1 wave
+Parsed 2 task(s) from plan.md
 
-Wave 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  ⟳ string-utils .............. implementing
-  ⟳ array-utils ............... implementing
-  ✓ string-utils .............. tested     12.4s
-  ✓ array-utils ............... tested     14.1s
+Tasks: 2 across 2 wave(s)
+Concurrency: 4
 
-✓ All tasks complete — 2/2 passed (26.8s)
-Merging branches into main...
-✓ Merged successfully
+—— Wave 1/2 (1 task) ——
+
+                    Workbench
+ Task            Status   Time    Pipeline
+ Short Title     done     3m42s   impl:ok → test:pass → review:pass
+
+Merging 1 branch(es) into workbench-1...
+  ✓ wb/short-title — Merged cleanly.
+
+—— Wave 2/2 (1 task) ——
+
+                    Workbench
+ Task            Status   Time    Pipeline
+ Another Task    done     4m18s   impl:ok → test:fail → fix → test:pass → review:pass
+
+Merging 1 branch(es) into workbench-1...
+  ✓ wb/another-task — Merged cleanly.
 ```
 
-To preview the plan without running anything:
+## Merging the Results
+
+When the plan completes, all changes are on a session branch (e.g. `workbench-1`). This branch contains the merged results of every task across all waves. To integrate the work:
 
 ```bash
-wb preview plan.md
+# Merge into your current branch
+git merge workbench-1
+
+# Or merge into main
+git checkout main
+git merge workbench-1
 ```
 
-This shows the parsed tasks, dependency graph, and wave assignments without executing any code.
+Review the diff before merging — workbench agents do the implementation, but you own the final review.
+
+## Cleanup
+
+Workbench creates isolated git worktrees for each task. These are usually cleaned up automatically, but if any remain after completion you can remove them:
+
+```bash
+wb clean
+```
+
+This removes all workbench-created worktrees. To also stop any running agent sessions and remove their branches:
+
+```bash
+wb stop --cleanup
+```
 
 ## What's Next
 

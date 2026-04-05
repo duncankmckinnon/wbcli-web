@@ -26,12 +26,12 @@ export function Hero() {
           <span className="hero-line-2 block py-2">
             Multi-agent Orchestrator
           </span>
-          <span className="hero-line-3 block pt-2 bg-gradient-to-r from-brand-accent-secondary to-brand-accent-tertiary bg-clip-text text-transparent">
+          <span className="hero-line-3 block pt-2 pb-4 bg-gradient-to-r from-brand-accent-secondary to-brand-accent-tertiary bg-clip-text text-transparent">
             Anywhere you work
           </span>
         </h1>
 
-        <p className="hero-fade mx-auto mt-6 max-w-2xl text-lg leading-8 text-brand-text-secondary sm:text-xl">
+        <p className="hero-fade mx-auto mt-8 max-w-2xl text-lg leading-8 text-brand-text-secondary sm:text-xl">
           Write plan. Run plan. Workbench does the rest.
         </p>
 

@@ -67,10 +67,6 @@ export function CodeExample() {
                 <span className="text-brand-text-primary">wb run plan.md</span>
               </div>
 
-              <div className="mt-4 text-brand-text-secondary">
-                <span className="text-brand-accent-primary">workbench</span> v0.9.2
-              </div>
-
               <div className="mt-4">
                 <span className="text-brand-text-secondary">Wave 1</span>
                 <span className="text-brand-text-muted"> — 2 tasks in parallel</span>
