@@ -1,0 +1,122 @@
+---
+title: Skills
+description: Agent skill files that teach your AI coding assistant how to install, configure, and use workbench.
+order: 8
+---
+
+<a href="/downloads/workbench-skills.zip" download className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-indigo-500 to-violet-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg no-underline hover:brightness-110 transition-all mb-8">
+  Download All Skills
+</a>
+
+## What Are Skills?
+
+Skills are instruction files that teach your AI coding agent how to work with workbench. When installed, your agent can automatically install workbench, configure agents and profiles, and write execution plans — all from natural language prompts.
+
+Workbench ships three skills:
+
+| Skill | Trigger | What it does |
+|---|---|---|
+| `install-workbench` | "Install workbench", "set up wb" | Guides the agent through prerequisites, installation, and `wb setup` |
+| `configure-workbench` | "Configure agents", "set up profiles" | Helps configure agent adapters, profiles, and troubleshoot dispatch |
+| `use-workbench` | "Write a plan", `/use-workbench` | Converts your ideas into workbench plans with proper task graphs |
+
+## Installing Skills from the Download
+
+If you don't have workbench installed yet, you can bootstrap the process by downloading the skills and placing them manually. Your agent will then use the `install-workbench` skill to guide you through the rest.
+
+1. **Download** the skills zip using the button above
+
+2. **Unzip** into your project's `.agents/skills/` directory:
+
+```bash
+mkdir -p .agents/skills
+unzip workbench-skills.zip -d .agents/skills/
+```
+
+This creates:
+
+```
+.agents/skills/
+├── install-workbench/
+│   └── SKILL.md
+├── configure-workbench/
+│   └── SKILL.md
+└── use-workbench/
+    └── SKILL.md
+```
+
+3. **For Claude Code users**, also copy to `.claude/skills/`:
+
+```bash
+mkdir -p .claude/skills
+cp -r .agents/skills/install-workbench .claude/skills/
+cp -r .agents/skills/configure-workbench .claude/skills/
+cp -r .agents/skills/use-workbench .claude/skills/
+```
+
+4. **Ask your agent** to install workbench — it will now have the `install-workbench` skill and can walk you through the full setup:
+
+> "Install workbench and set up this repo"
+
+## Installing Skills via wb setup
+
+If you already have workbench installed, `wb setup` handles skill installation automatically:
+
+```bash
+wb setup                    # auto-detect your agent platform and install skills
+wb setup --agent claude     # explicitly install for Claude Code
+wb setup --update           # force-update skills to the latest version
+wb setup --symlink          # symlink instead of copy (stays in sync with package updates)
+```
+
+## Using Skills
+
+Once installed, skills activate automatically based on what you ask your agent to do:
+
+### install-workbench
+
+Ask your agent to install workbench or check prerequisites:
+
+> "Install wbcli and set up this repo for workbench"
+
+> "Check if I have all the prerequisites for workbench"
+
+The agent will check your Python version, git, tmux, and agent CLI, then run `pip install wbcli` and `wb setup`.
+
+### configure-workbench
+
+Ask your agent to configure agents or profiles:
+
+> "Set up Gemini as the reviewer and Claude as the implementor"
+
+> "Add a custom agent adapter for my-cli"
+
+> "Create a profile for fast iteration with codex"
+
+The agent will use `wb agents` and `wb profile` commands to configure your setup.
+
+### use-workbench
+
+**From an idea:** Ask your agent to write a plan from scratch:
+
+> "Write a workbench plan to add authentication to this app"
+
+> `/use-workbench`
+
+The agent will survey your codebase, design a task graph with proper dependencies and file ownership, and produce a ready-to-run plan.
+
+**From an existing plan:** You can also point the skill at an existing plan or spec to restructure it for workbench execution. This is useful when you have a rough plan, a design doc, or an implementation spec that isn't yet formatted for parallel agent dispatch:
+
+> "Convert this plan into a workbench plan: .workbench/draft.md"
+
+> "Restructure docs/spec.md as a workbench plan with proper task isolation"
+
+The agent reads the existing document, identifies independent units of work, determines file ownership to avoid merge conflicts, sets up dependency ordering across waves, and fills in the detail each task needs to be self-contained — function signatures, interfaces from earlier tasks, test commands, and edge cases. The result is a plan at the right level of specificity for agents that can only see their own task description.
+
+**Running the plan:** Once a plan is ready, the skill can also generate the `wb run` command with the right flags for your situation — TDD mode, specific base branches, named sessions, agent selection, directive overrides, and more:
+
+> "Run this plan with Gemini for implementation and Claude for review"
+
+> "Run plan.md in TDD mode on the feature-auth branch"
+
+See [Plan Format](/docs/plan-format) for details on the structure it generates.

@@ -11,6 +11,7 @@ export default function DocsLayout({
   const docs = getAllDocs().map((doc) => ({
     slug: doc.slug,
     title: doc.title,
+    parent: doc.parent,
   }));
 
   return (

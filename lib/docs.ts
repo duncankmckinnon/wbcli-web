@@ -7,6 +7,7 @@ export interface DocMeta {
   title: string;
   description: string;
   order: number;
+  parent?: string;
 }
 
 const DOCS_DIR = path.join(process.cwd(), 'content', 'docs');
@@ -25,6 +26,7 @@ export function getAllDocs(): DocMeta[] {
       title: data.title as string,
       description: data.description as string,
       order: data.order as number,
+      parent: (data.parent as string) || undefined,
     };
   });
 
@@ -42,6 +44,7 @@ export function getDocBySlug(slug: string): { meta: DocMeta; content: string } {
       title: data.title as string,
       description: data.description as string,
       order: data.order as number,
+      parent: (data.parent as string) || undefined,
     },
     content,
   };

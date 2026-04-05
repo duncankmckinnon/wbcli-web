@@ -4,6 +4,8 @@ description: Install workbench and run your first multi-agent plan in under five
 order: 1
 ---
 
+> **Prefer to let your agent handle setup?** Download the [workbench skills](/docs/skills) and drop them into your project — your agent can install workbench, configure agents, and set up your environment automatically.
+
 ## Prerequisites
 
 Before installing workbench, make sure you have the following:
@@ -15,6 +17,7 @@ Before installing workbench, make sure you have the following:
   - [Claude Code](https://docs.anthropic.com/en/docs/claude-code) — `claude` command
   - [Gemini CLI](https://github.com/google-gemini/gemini-cli) — `gemini` command
   - [OpenAI Codex](https://github.com/openai/codex) — `codex` command
+  - [Cursor CLI](https://cursor.com/docs/cli/overview) — `cursor` command
   - Any custom CLI that supports dispatch — see [Agents](/docs/agents#custom-agents)
 
 Your agent CLI must be installed and authenticated separately. Workbench dispatches work to these agents — it does not bundle them.
@@ -157,37 +160,11 @@ Merging 1 branch(es) into workbench-1...
   ✓ wb/another-task — Merged cleanly.
 ```
 
-## Merging the Results
-
-When the plan completes, all changes are on a session branch (e.g. `workbench-1`). This branch contains the merged results of every task across all waves. To integrate the work:
-
-```bash
-# Merge into your current branch
-git merge workbench-1
-
-# Or merge into main
-git checkout main
-git merge workbench-1
-```
-
-Review the diff before merging — workbench agents do the implementation, but you own the final review.
-
-## Cleanup
-
-Workbench creates isolated git worktrees for each task. These are usually cleaned up automatically, but if any remain after completion you can remove them:
-
-```bash
-wb clean
-```
-
-This removes all workbench-created worktrees. To also stop any running agent sessions and remove their branches:
-
-```bash
-wb stop --cleanup
-```
-
 ## What's Next
+
+When your plan completes, all changes land on a session branch (e.g. `workbench-1`) ready to merge. See [Running Plans](/docs/running-plans) for details on merging results, handling failures, monitoring agents, and cleanup.
 
 - **[Plan Format](/docs/plan-format)** — learn about dependencies, waves, and advanced plan structure
 - **[CLI Reference](/docs/cli-reference)** — explore all commands and flags
-- **[Agents](/docs/agents)** — configure multi-provider setups with Claude, Gemini, and Codex
+- **[Agents](/docs/agents)** — configure multi-provider setups with Claude, Gemini, Codex, and Cursor
+- **[Running Plans](/docs/running-plans)** — monitoring, failure handling, merging, and cleanup

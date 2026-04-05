@@ -1,0 +1,133 @@
+---
+title: Running Plans
+description: Monitor agent sessions, handle failures, merge results, and manage worktrees.
+order: 3
+parent: plan-format
+---
+
+## Monitoring with tmux
+
+By default, workbench runs agents in tmux sessions for live monitoring. You can attach to any agent session to watch it work:
+
+```bash
+tmux attach -t wb-task-1-implementor
+tmux attach -t wb-task-2-tester
+```
+
+Sessions are named `wb-task-<N>-<role>` where role is one of `implementor`, `tester`, `reviewer`, `fixer`, or `merger`.
+
+To run without tmux, use the `--no-tmux` flag:
+
+```bash
+wb run plan.md --no-tmux
+```
+
+This runs agents as subprocesses instead. Output is still captured but you can't attach to individual sessions.
+
+## Handling Failures
+
+If some tasks fail, you have several options:
+
+### Retry failed tasks
+
+```bash
+# Re-run only tasks that failed in a previous session
+wb run plan.md -b workbench-1 --only-failed
+
+# Auto-retry tasks that crashed (not those that exhausted fix retries)
+wb run plan.md --retry-failed
+
+# Stop immediately if any task in a wave fails
+wb run plan.md --fail-fast
+
+# Combine: retry crashes, then stop if still failing
+wb run plan.md --retry-failed --fail-fast
+```
+
+`--retry-failed` distinguishes between transient failures (agent crash, timeout) and deliberate failures (exhausted all fix cycles). Only transient failures are retried.
+
+`--only-failed` reads `.workbench/status.json` to determine which tasks already completed. It requires `-b` to specify the session branch to resume.
+
+### Re-run specific tasks
+
+```bash
+# Re-run a single task in an existing session
+wb run plan.md -b workbench-1 --task task-2
+
+# Re-run multiple specific tasks
+wb run plan.md -b workbench-1 --task task-1 --task task-3
+
+# Re-run a task by its slug (title converted to lowercase-dashes)
+wb run plan.md -b workbench-1 --task my-feature-name
+
+# Run specific tasks in a new session
+wb run plan.md --task task-2
+```
+
+`--task` accepts task IDs (e.g. `task-2`) or slugs (e.g. `my-feature-name`). Only the specified tasks run — all other tasks are left untouched.
+
+## Merging Results
+
+When a plan completes, all changes are on a session branch (e.g. `workbench-1`). This branch contains the merged results of every task across all waves.
+
+```bash
+# Merge into your current branch
+git merge workbench-1
+
+# Or merge into main
+git checkout main
+git merge workbench-1
+```
+
+### Merging interrupted sessions
+
+If a run was interrupted or some merges failed due to conflicts, use `wb merge` to attempt merging without re-running pipelines:
+
+```bash
+wb merge -b workbench-1
+```
+
+This reads `.workbench/status.json`, finds tasks with `status=done` that haven't been merged yet, and attempts each merge. Conflicts are handled by a merge resolver agent. Branches that were already merged manually are detected and skipped.
+
+You can specify which agent handles conflict resolution:
+
+```bash
+wb merge -b workbench-1 --agent gemini
+wb merge -b workbench-1 --no-tmux
+```
+
+## Branching Strategy
+
+When you run `wb run plan.md`, workbench creates this branch structure:
+
+```
+main (or --base branch)
+ └── workbench-N (or --name)         ← session branch
+      ├── wb/task-1-short-title       ← worktree branch for task 1
+      ├── wb/task-2-another-task      ← worktree branch for task 2
+```
+
+Each task gets its own branch and worktree. After a wave completes, successful task branches are merged into the session branch. The next wave branches from the updated session branch.
+
+| Flag | Session branch | Base | Source | Use case |
+|---|---|---|---|---|
+| *(default)* | `workbench-N` | `main` | `origin/main` (fetched) | Start from latest remote |
+| `--name my-feature` | `my-feature` | `main` | `origin/main` (fetched) | Named session branch |
+| `--local` | `workbench-N` | `main` | local `main` | Build on unpushed local work |
+| `--base <branch>` | `workbench-N` | `<branch>` | `origin/<branch>` (fetched) | Branch from a specific remote branch |
+| `--base <branch> --local` | `workbench-N` | `<branch>` | local `<branch>` | Branch from a local feature branch |
+| `-b my-session` | `my-session` | *(existing)* | *(existing)* | Resume a previous session |
+
+## Cleanup
+
+Workbench creates isolated git worktrees for each task. These are usually cleaned up automatically, but if any remain:
+
+```bash
+wb clean
+```
+
+This removes all workbench-created worktrees and `wb/` branches. To also stop any running agent sessions:
+
+```bash
+wb stop --cleanup
+```

@@ -1,7 +1,8 @@
 ---
 title: CLI Reference
 description: Complete reference for all workbench CLI commands and flags.
-order: 3
+order: 2
+parent: getting-started
 ---
 
 ## Commands
@@ -15,6 +16,11 @@ order: 3
 | `wb status` | Show active worktrees |
 | `wb stop` | Kill all running agent tmux sessions |
 | `wb clean` | Remove all workbench worktrees and `wb/` branches |
+| `wb agents init` | Create agents.yaml with built-in adapter configs |
+| `wb agents list` | List built-in and custom agent adapters |
+| `wb agents show <name>` | Show details for an agent adapter |
+| `wb agents add <name>` | Add or update a custom agent adapter |
+| `wb agents remove <name>` | Remove a custom agent adapter |
 | `wb profile init` | Create profile.yaml from defaults |
 | `wb profile show` | Show resolved profile |
 | `wb profile set <key> <value>` | Update a profile field |
@@ -39,6 +45,7 @@ wb run <plan.md> [options]
 | `--tdd` | Test-driven: write tests first, then implement |
 | `--agent CMD` | Agent CLI command (default: `claude`) |
 | `--no-tmux` | Run agents as subprocesses instead of tmux |
+| `--name NAME` | Name for the session branch (default: `workbench-N`) |
 | `--base BRANCH` | Base branch to start from (default: `main`) |
 | `--local` | Branch from local ref instead of fetching origin |
 | `-b NAME` / `--session-branch` | Resume an existing session branch |
@@ -168,6 +175,59 @@ wb clean [options]
 |---|---|
 | `--yes` | Skip confirmation prompt |
 | `--repo PATH` | Repository path (auto-detected if omitted) |
+
+## wb agents
+
+Manage agent adapters — built-in and custom CLI integrations.
+
+### wb agents init
+
+Create `.workbench/agents.yaml` pre-populated with configs for all built-in adapters (Claude, Gemini, Codex, Cursor). Use as a starting point for customization.
+
+```bash
+wb agents init [--repo PATH]
+```
+
+### wb agents list
+
+List all available agents (built-in and custom):
+
+```bash
+wb agents list [--repo PATH]
+```
+
+### wb agents show
+
+Show the full configuration for a specific agent:
+
+```bash
+wb agents show <name> [--repo PATH]
+```
+
+### wb agents add
+
+Add or update a custom agent adapter:
+
+```bash
+wb agents add <name> [options]
+```
+
+| Flag | Description |
+|---|---|
+| `--command CMD` | CLI command to invoke (required) |
+| `--args TEMPLATE` | Argument template, comma-separated (default: `{prompt}`) |
+| `--output-format FMT` | `text` or `json` (default: `text`) |
+| `--json-result-key KEY` | JSON key for result (default: `result`) |
+| `--json-cost-key KEY` | JSON key for cost (default: `cost_usd`) |
+| `--repo PATH` | Repository path (auto-detected if omitted) |
+
+### wb agents remove
+
+Remove a custom agent adapter:
+
+```bash
+wb agents remove <name> [--repo PATH]
+```
 
 ## wb profile
 
