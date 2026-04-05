@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { CopyButton } from "@/components/shared/copy-button";
 import { GitHubStars } from "@/components/landing/github-stars";
 
@@ -30,6 +31,17 @@ export function Hero() {
             Anywhere you work
           </span>
         </h1>
+
+        <div className="hero-fade mt-10">
+          <Image
+            src="/workbench-banner-2.png"
+            alt="workbench logo"
+            width={2436}
+            height={1011}
+            className="mx-auto max-w-2xl w-full h-auto"
+            priority
+          />
+        </div>
 
         <p className="hero-fade mx-auto mt-8 max-w-2xl text-lg leading-8 text-brand-text-secondary sm:text-xl">
           Write plan. Run plan. Workbench does the rest.
