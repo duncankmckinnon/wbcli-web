@@ -75,10 +75,20 @@ export function Nav() {
             href="https://github.com/duncankmckinnon/workbench"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-brand-text-secondary hover:text-brand-text-primary transition-colors"
-            aria-label="GitHub"
+            className="inline-flex items-center gap-1.5 text-sm text-brand-text-secondary hover:text-brand-text-primary transition-colors"
           >
             <GitHubIcon />
+          </a>
+          <a
+            href="https://github.com/duncankmckinnon/workbench/stargazers"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-brand-bg-tertiary px-3 py-1.5 text-sm text-brand-text-secondary hover:text-yellow-400 hover:border-yellow-400/50 transition-colors"
+          >
+            <svg viewBox="0 0 16 16" className="h-4 w-4 fill-current" aria-hidden="true">
+              <path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z" />
+            </svg>
+            Star
           </a>
           <Link
             href="/docs/getting-started"
@@ -119,6 +129,18 @@ export function Nav() {
             >
               <GitHubIcon />
               GitHub
+            </a>
+            <a
+              href="https://github.com/duncankmckinnon/workbench/stargazers"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-sm text-brand-text-secondary hover:text-yellow-400 transition-colors"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <svg viewBox="0 0 16 16" className="h-4 w-4 fill-current" aria-hidden="true">
+                <path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z" />
+              </svg>
+              Star on GitHub
             </a>
             <Link
               href="/docs/getting-started"
