@@ -4,6 +4,22 @@ description: Complete reference for all workbench CLI commands and flags.
 order: 3
 ---
 
+## Commands
+
+| Command | Description |
+|---|---|
+| `wb run <plan>` | Execute a plan with parallel agents |
+| `wb merge -b <branch>` | Merge completed-but-unmerged task branches |
+| `wb preview <plan>` | Dry-run: show parsed tasks and waves |
+| `wb setup` | Create `.workbench/`, install skills, and optionally create a profile |
+| `wb status` | Show active worktrees |
+| `wb stop` | Kill all running agent tmux sessions |
+| `wb clean` | Remove all workbench worktrees and `wb/` branches |
+| `wb profile init` | Create profile.yaml from defaults |
+| `wb profile show` | Show resolved profile |
+| `wb profile set <key> <value>` | Update a profile field |
+| `wb profile diff` | Show differences from defaults |
+
 ## wb run
 
 The primary command. Parses a plan, creates isolated git worktrees, and dispatches agents in parallel.
@@ -16,16 +32,27 @@ wb run <plan.md> [options]
 
 | Flag | Description |
 |---|---|
-| `--tdd` | Enable test-driven development mode — tests are written before implementation |
-| `--skip-test` | Skip the test stage of the pipeline |
-| `--skip-review` | Skip the review stage of the pipeline |
-| `--base <branch>` | Branch from a specific branch instead of the default (usually `main`) |
-| `--local` | Use the local branch ref instead of fetching from origin |
-| `-b <branch>`, `--session-branch <branch>` | Resume a previous session branch |
-| `-w <N>`, `--start-wave <N>` | Start from a specific wave number (for resuming interrupted runs) |
-| `--max-retries <N>` | Maximum fix attempts per task (default: 2) |
-| `--reviewer-directive "<text>"` | Custom instructions appended to the reviewer agent prompt |
-| `--tester-directive "<text>"` | Custom instructions appended to the tester agent prompt |
+| `-j N` | Max concurrent agents (default: 4) |
+| `--max-retries N` / `-r N` | Max fix cycles per failed stage (default: 2) |
+| `--skip-test` | Skip the test phase |
+| `--skip-review` | Skip the review phase |
+| `--tdd` | Test-driven: write tests first, then implement |
+| `--agent CMD` | Agent CLI command (default: `claude`) |
+| `--no-tmux` | Run agents as subprocesses instead of tmux |
+| `--base BRANCH` | Base branch to start from (default: `main`) |
+| `--local` | Branch from local ref instead of fetching origin |
+| `-b NAME` / `--session-branch` | Resume an existing session branch |
+| `-w N` / `--start-wave` | Skip already-completed waves |
+| `--retry-failed` | Auto-retry tasks that crashed (not those that exhausted fix retries) |
+| `--fail-fast` | Stop after the first wave with any failed tasks |
+| `--only-failed` | Skip completed tasks from a prior run (requires `-b`) |
+| `--task ID` | Run only specific tasks by ID or slug (repeatable) |
+| `--cleanup` | Remove worktrees after completion |
+| `--keep-branches` | Keep task branches after merging (default: auto-delete on success) |
+| `--repo PATH` | Repository path (auto-detected if omitted) |
+| `--profile PATH` | Use a specific profile.yaml |
+| `--profile-name NAME` | Use a named profile (`profile.<name>.yaml`) |
+| `--*-directive TEXT` | Override instructions for a specific agent role |
 
 ### Examples
 
@@ -44,7 +71,13 @@ wb run plan.md --tdd --skip-review
 Resume a previously interrupted session from wave 3:
 
 ```bash
-wb run plan.md -b wb/my-feature -w 3
+wb run plan.md -b workbench-1 -w 3
+```
+
+Retry only the tasks that failed in a previous run:
+
+```bash
+wb run plan.md -b workbench-1 --only-failed
 ```
 
 Add custom reviewer instructions:
@@ -52,6 +85,24 @@ Add custom reviewer instructions:
 ```bash
 wb run plan.md --reviewer-directive "Focus on error handling and edge cases"
 ```
+
+## wb merge
+
+Merge completed-but-unmerged task branches into the session branch. Useful when tasks completed but merging was interrupted or skipped.
+
+```bash
+wb merge -b <session-branch> [options]
+```
+
+### Flags
+
+| Flag | Description |
+|---|---|
+| `-b NAME` / `--session-branch` | Session branch to merge into (required) |
+| `--agent CMD` | Agent CLI for conflict resolution (default: `claude`) |
+| `--no-tmux` | Run resolver agents as subprocesses instead of tmux |
+| `--keep-branches` | Keep task branches after merging |
+| `--repo PATH` | Repository path (auto-detected if omitted) |
 
 ## wb preview
 
@@ -61,114 +112,102 @@ Dry-run a plan. Shows parsed tasks, the dependency graph, and wave assignments w
 wb preview <plan.md>
 ```
 
-### Example Output
+## wb setup
 
+Initialize a repository for workbench. Creates the `.workbench/` directory, installs agent skill files, and optionally creates a profile.
+
+```bash
+wb setup [options]
 ```
-$ wb preview plan.md
-Plan: plan.md
-Tasks: 4
-Waves: 2
 
-Wave 1:
-  ├── database-schema
-  │   Files: prisma/schema.prisma
-  └── auth-utils
-      Files: src/lib/auth.ts
+### Flags
 
-Wave 2:
-  ├── user-routes
-  │   Files: src/routes/users.ts
-  │   Depends: database-schema
-  └── auth-routes
-      Files: src/routes/auth.ts
-      Depends: database-schema, auth-utils
-
-⚠ No file overlaps detected
-```
+| Flag | Description |
+|---|---|
+| `--agent NAME` | Target platform: `claude`, `gemini`, `cursor`, `codex`, `manual` (auto-detected if omitted) |
+| `--global` | Install skills to user-level paths only (skip `.workbench/` creation) |
+| `--symlink` | Symlink instead of copy (stays in sync with package updates) |
+| `--profile` | Also create a profile.yaml with the detected agent |
+| `--update` | Force-update skills to the latest version |
+| `--repo PATH` | Repository path (auto-detected if omitted) |
 
 ## wb status
 
-Shows active workbench sessions, running agents, and worktree status.
+Shows active workbench worktrees.
 
 ```bash
-wb status
-```
-
-### Example Output
-
-```
-$ wb status
-Session: wb/feature-auth (started 2m ago)
-Wave 2 of 2 in progress
-
-  ✓ database-schema .... done     8.2s
-  ✓ auth-utils ......... done    11.4s
-  ⟳ user-routes ........ testing
-  ⟳ auth-routes ........ reviewing
-
-Worktrees: 4 active
+wb status [--repo PATH]
 ```
 
 ## wb stop
 
-Kill all active agent sessions and stop the current run.
+Kill all running agent tmux sessions.
 
 ```bash
-wb stop [--cleanup]
+wb stop [options]
+```
+
+### Flags
+
+| Flag | Description |
+|---|---|
+| `--cleanup` | Also remove worktrees and `wb/` branches |
+| `--repo PATH` | Repository path (auto-detected if omitted) |
+
+## wb clean
+
+Remove all workbench-created git worktrees and `wb/` branches. Useful for reclaiming disk space after a run or cleaning up after interrupted sessions.
+
+```bash
+wb clean [options]
+```
+
+### Flags
+
+| Flag | Description |
+|---|---|
+| `--yes` | Skip confirmation prompt |
+| `--repo PATH` | Repository path (auto-detected if omitted) |
+
+## wb profile
+
+Manage agent profiles — saved configurations for which agent handles which pipeline role.
+
+### wb profile init
+
+Create a profile from defaults:
+
+```bash
+wb profile init [options]
 ```
 
 | Flag | Description |
 |---|---|
-| `--cleanup` | Also remove worktrees and session branches created by the run |
+| `--global` | Create in `~/.workbench/` instead of `.workbench/` |
+| `--name NAME` | Create a named profile (`profile.<name>.yaml`) |
+| `--set KEY=VALUE` | Set role fields inline (repeatable) |
+| `--repo PATH` | Repository path (auto-detected if omitted) |
 
-## wb clean
+### wb profile show
 
-Remove all workbench-created git worktrees. Useful for reclaiming disk space after a run or cleaning up after interrupted sessions.
-
-```bash
-wb clean
-```
-
-This removes only worktrees that were created by workbench (identified by the `wb/` branch prefix). Your working directory is never affected.
-
-## wb setup
-
-Initialize a repository for workbench. Creates the `.workbench/` directory with default configuration.
+Display the resolved profile configuration:
 
 ```bash
-wb setup
+wb profile show [options]
 ```
 
-Run this once in any git repo before using workbench. If the `.workbench/` directory already exists, this command is a no-op.
-
-## wb init
-
-Install workbench skill files for your agent platform. Skills are prompt extensions that help agents understand the workbench pipeline and produce better results.
-
-```bash
-wb init
-```
-
-This detects your installed agent CLIs and installs the appropriate skill files. Re-run after installing a new agent CLI.
-
-## wb profile
-
-Manage agent profiles — saved configurations for which agent handles which role.
-
-### wb profile init
-
-Create a default profile in `.workbench/profile.yaml`:
-
-```bash
-wb profile init
-```
+| Flag | Description |
+|---|---|
+| `--name NAME` | Show a named profile |
+| `--profile PATH` | Path to a specific profile.yaml |
+| `--repo PATH` | Repository path (auto-detected if omitted) |
 
 ### wb profile set
 
-Assign an agent to a specific role:
+Update a profile field:
 
 ```bash
-wb profile set <role> <agent>
+wb profile set <key> <value> [options]
 ```
 
 Roles: `implementor`, `tester`, `reviewer`, `fixer`
@@ -178,18 +217,22 @@ wb profile set implementor gemini
 wb profile set reviewer claude
 ```
 
-### wb profile show
-
-Display the current profile configuration:
-
-```bash
-wb profile show
-```
+| Flag | Description |
+|---|---|
+| `--global` | Update `~/.workbench/` instead of local |
+| `--name NAME` | Update a named profile |
+| `--repo PATH` | Repository path (auto-detected if omitted) |
 
 ### wb profile diff
 
 Show differences between your current profile and the default:
 
 ```bash
-wb profile diff
+wb profile diff [options]
 ```
+
+| Flag | Description |
+|---|---|
+| `--name NAME` | Diff a named profile |
+| `--profile PATH` | Path to a specific profile.yaml |
+| `--repo PATH` | Repository path (auto-detected if omitted) |

@@ -52,7 +52,6 @@ const steps: { number: string; title: string; description: ReactNode; icon: Reac
 ];
 
 const pipelineStages = [
-  { label: "start", type: "fixed" as const },
   { label: "test", type: "optional" as const },
   { label: "implement", type: "fixed" as const },
   { label: "test", type: "fixed" as const },
@@ -60,7 +59,6 @@ const pipelineStages = [
   { label: "review", type: "fixed" as const },
   { label: "fix", type: "optional" as const },
   { label: "merge", type: "fixed" as const },
-  { label: "done", type: "fixed" as const },
 ];
 
 export function HowItWorks() {

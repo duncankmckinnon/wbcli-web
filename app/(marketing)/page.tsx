@@ -3,7 +3,6 @@ import { Hero } from "@/components/landing/hero";
 import { HowItWorks } from "@/components/landing/how-it-works";
 import { Features } from "@/components/landing/features";
 import { CodeExample } from "@/components/landing/code-example";
-import { CTAFooter } from "@/components/landing/cta-footer";
 
 export const metadata: Metadata = {
   title: "workbench — Ultra-lightweight multi-agent orchestrator",
@@ -20,14 +19,11 @@ export default function LandingPage() {
       <section className="py-20 bg-brand-bg-secondary/50">
         <HowItWorks />
       </section>
-      <section className="py-24">
-        <Features />
-      </section>
-      <section className="py-20 bg-brand-bg-secondary/50">
+      <section className="py-20">
         <CodeExample />
       </section>
-      <section className="py-24">
-        <CTAFooter />
+      <section className="py-24 bg-brand-bg-secondary/50">
+        <Features />
       </section>
     </>
   );

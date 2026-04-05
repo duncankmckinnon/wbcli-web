@@ -74,4 +74,21 @@ export const mdxComponents: Record<string, React.ComponentType<any>> = {
       {...props}
     />
   ),
+  table: (props: ComponentPropsWithoutRef<"table">) => (
+    <div className="overflow-x-auto mb-4">
+      <table className="w-full text-sm text-brand-text-secondary" {...props} />
+    </div>
+  ),
+  thead: (props: ComponentPropsWithoutRef<"thead">) => (
+    <thead className="border-b border-brand-bg-tertiary text-brand-text-primary" {...props} />
+  ),
+  th: (props: ComponentPropsWithoutRef<"th">) => (
+    <th className="px-4 py-2 text-left font-semibold" {...props} />
+  ),
+  td: (props: ComponentPropsWithoutRef<"td">) => (
+    <td className="px-4 py-2 border-b border-brand-bg-tertiary/50" {...props} />
+  ),
+  tr: (props: ComponentPropsWithoutRef<"tr">) => (
+    <tr className="hover:bg-brand-bg-secondary/50" {...props} />
+  ),
 };

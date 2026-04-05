@@ -4,126 +4,111 @@ description: Save per-project agent configurations with profiles — assign agen
 order: 5
 ---
 
-## What Are Profiles
+## Overview
 
-Profiles let you save per-project agent configurations. Instead of passing `--reviewer-directive` or configuring `agents.yaml` manually each time, a profile stores your preferred setup so it persists across runs.
-
-A profile defines:
-
-- Which agent handles each role (implementor, tester, reviewer, fixer)
-- Custom directives for each role
+Profiles configure which agent CLI and instructions are used for each pipeline role. When no profile exists, built-in defaults apply (Claude Code for all roles, no custom directives).
 
 ## Creating a Profile
 
-Initialize a default profile:
-
 ```bash
-wb profile init
+wb profile init                                            # create .workbench/profile.yaml from defaults
+wb profile init --global                                   # create ~/.workbench/profile.yaml
+wb profile init --set reviewer.agent=gemini                # create with inline overrides
+wb profile init --set reviewer.agent=gemini --set tester.directive_extend="Run with -x"
 ```
 
-This creates `.workbench/profile.yaml` with the default configuration:
+## Named Profiles
+
+Create multiple profiles for different workflows:
+
+```bash
+wb profile init --name fast --set reviewer.agent=gemini --set implementor.agent=codex
+wb profile init --name security --set reviewer.directive="Focus only on security vulnerabilities."
+wb run plan.md --profile-name fast                         # use a named profile
+```
+
+Named profiles are stored as `profile.<name>.yaml` alongside the default `profile.yaml`.
+
+## Customizing Roles
+
+Use `wb profile set` to update individual fields:
+
+```bash
+wb profile set reviewer.agent gemini                       # update default profile
+wb profile set tester.directive_extend "Run pytest with -x flag."
+wb profile set reviewer.agent codex --name fast            # update a named profile
+```
+
+Or edit `.workbench/profile.yaml` directly:
 
 ```yaml
-# .workbench/profile.yaml
-implementor:
-  agent: claude
-  directive: ""
-tester:
-  agent: claude
-  directive: ""
-reviewer:
-  agent: claude
-  directive: ""
-fixer:
-  agent: claude
-  directive: ""
+roles:
+  reviewer:
+    agent: gemini
+    directive: "Focus on security and correctness."
+  tester:
+    directive_extend: "Also check edge cases for null inputs."
 ```
 
-All roles default to Claude Code with no custom directives.
+Use `directive` to replace the default instructions, or `directive_extend` to append to them.
 
-## Assigning Agents to Roles
+## Profile Fields
 
-Use `wb profile set` to change which agent handles a role:
+### Roles
+
+| Role | Description |
+|---|---|
+| `implementor` | Writes code to fulfill the task |
+| `tester` | Runs and writes tests, reports PASS/FAIL |
+| `reviewer` | Reviews the diff for correctness and quality |
+| `fixer` | Addresses feedback from failed tests or reviews |
+| `merger` | Resolves merge conflicts between parallel branches |
+
+### Fields per Role
+
+| Field | Description |
+|---|---|
+| `agent` | CLI command to use for this role (default: `claude`) |
+| `directive` | Full replacement for the role's default instructions |
+| `directive_extend` | Text appended to the default instructions (cannot be combined with `directive`) |
+
+## Viewing and Comparing
 
 ```bash
-wb profile set implementor gemini
+wb profile show                    # print resolved profile
+wb profile show --name fast        # show a named profile
+wb profile diff                    # show differences from defaults
+wb profile diff --name fast        # diff a named profile
 ```
+
+## Merge Order
+
+Profiles merge in order of specificity. Later sources override earlier ones:
+
+1. Built-in defaults
+2. `~/.workbench/profile.yaml` (global)
+3. `.workbench/profile.yaml` (project)
+4. `--profile` flag (explicit path)
+5. CLI flags (`--*-directive`)
+
+Named profiles (`--profile-name`) replace the default filename at each level.
+
+## Directive Overrides
+
+Override the instructions given to any agent role directly from the CLI, without modifying the profile:
 
 ```bash
-wb profile set reviewer claude
+wb run plan.md --reviewer-directive "Focus only on security issues."
+wb run plan.md --tester-directive "Run pytest with -x flag, fail fast."
 ```
 
-```bash
-wb profile set tester codex
-```
+Available flags: `--implementor-directive`, `--tester-directive`, `--reviewer-directive`, `--fixer-directive`.
 
-After running these commands, your profile would look like:
-
-```yaml
-implementor:
-  agent: gemini
-  directive: ""
-tester:
-  agent: codex
-  directive: ""
-reviewer:
-  agent: claude
-  directive: ""
-fixer:
-  agent: claude
-  directive: ""
-```
-
-## Viewing Your Profile
-
-Display the current profile configuration:
-
-```bash
-wb profile show
-```
-
-Example output:
-
-```
-$ wb profile show
-Profile: .workbench/profile.yaml
-
-  implementor:  gemini
-  tester:       codex
-  reviewer:     claude
-  fixer:        claude
-
-Directives:
-  (none configured)
-```
-
-## Comparing to Defaults
-
-See what you have changed from the default profile:
-
-```bash
-wb profile diff
-```
-
-Example output:
-
-```
-$ wb profile diff
-Profile differences from default:
-
-  implementor:  claude → gemini
-  tester:       claude → codex
-```
-
-Only changed values are shown. If your profile matches the defaults, the output will be empty.
+These are appended to the role's instructions and take precedence over profile values for that run.
 
 ## When to Use Profiles
-
-Different projects benefit from different agent configurations. Profiles make it easy to save and switch between setups:
 
 - **Speed-optimized** — use Gemini for implementation (faster output) and Claude for review (thorough analysis)
 - **Cost-optimized** — use a less expensive agent for testing and fixing, reserve the most capable agent for implementation
 - **Provider diversity** — spread work across providers to avoid rate limits on large plans
 - **Team consistency** — commit `.workbench/profile.yaml` to the repo so every team member uses the same agent configuration
-
-Profiles are read automatically by `wb run`. CLI flags like `--reviewer-directive` still work and override profile values for that specific run.
