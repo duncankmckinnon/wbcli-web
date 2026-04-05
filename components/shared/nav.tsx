@@ -80,7 +80,7 @@ export function Nav() {
             <GitHubIcon />
           </a>
           <a
-            href="https://github.com/duncankmckinnon/workbench/stargazers"
+            href="https://github.com/duncankmckinnon/workbench"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 rounded-lg border border-brand-bg-tertiary px-3 py-1.5 text-sm text-brand-text-secondary hover:text-yellow-400 hover:border-yellow-400/50 transition-colors"
@@ -131,7 +131,7 @@ export function Nav() {
               GitHub
             </a>
             <a
-              href="https://github.com/duncankmckinnon/workbench/stargazers"
+              href="https://github.com/duncankmckinnon/workbench"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 text-sm text-brand-text-secondary hover:text-yellow-400 transition-colors"
