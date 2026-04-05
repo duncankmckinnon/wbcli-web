@@ -35,7 +35,7 @@ export default async function DocsPage({ params }: PageProps) {
   const docSlug = slug?.[0];
 
   if (!docSlug) {
-    redirect("/docs/getting-started");
+    redirect("/docs/cli-reference");
   }
 
   const { meta, content } = getDocBySlug(docSlug);
