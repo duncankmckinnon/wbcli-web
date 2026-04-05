@@ -39,6 +39,9 @@ next-env.d.ts
 .superpowers
 .workbench
 
+# generated downloads
+public/downloads/
+
 # python
 .venv/
 __pycache__/

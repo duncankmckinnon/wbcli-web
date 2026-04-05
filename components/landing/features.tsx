@@ -10,7 +10,7 @@ const features = [
     ),
     title: "Multi-Agent Support",
     description:
-      "Claude Code, Gemini CLI, Codex, or your own custom agent",
+      "Assign Claude Code, Gemini CLI, Codex, or custom agents to each pipeline role",
   },
   {
     icon: (

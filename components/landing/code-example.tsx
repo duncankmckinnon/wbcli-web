@@ -21,14 +21,10 @@ export function CodeExample() {
                 <span className="text-green-400"># Add user authentication</span>
               </div>
               <div className="mt-4">
-                <span className="text-green-400">## Task 1: User model</span>
+                <span className="text-green-400">## Task: User model</span>
               </div>
               <div className="mt-1">
-                <span className="text-brand-text-primary">agent:</span>{" "}
-                <span className="text-brand-text-secondary">claude</span>
-              </div>
-              <div>
-                <span className="text-brand-text-primary">files:</span>{" "}
+                <span className="text-brand-text-primary">Files:</span>{" "}
                 <span className="text-brand-text-secondary">src/models/user.ts, src/db/schema.ts</span>
               </div>
               <div className="mt-1 text-brand-text-muted">
@@ -39,18 +35,14 @@ export function CodeExample() {
               </div>
 
               <div className="mt-5">
-                <span className="text-green-400">## Task 2: Auth endpoints</span>
+                <span className="text-green-400">## Task: Auth endpoints</span>
               </div>
               <div className="mt-1">
-                <span className="text-brand-text-primary">agent:</span>{" "}
-                <span className="text-brand-text-secondary">claude</span>
+                <span className="text-brand-text-primary">Depends:</span>{" "}
+                <span className="text-brand-text-secondary">user-model</span>
               </div>
               <div>
-                <span className="text-brand-text-primary">depends:</span>{" "}
-                <span className="text-brand-text-secondary">task-1</span>
-              </div>
-              <div>
-                <span className="text-brand-text-primary">files:</span>{" "}
+                <span className="text-brand-text-primary">Files:</span>{" "}
                 <span className="text-brand-text-secondary">src/routes/auth.ts</span>
               </div>
               <div className="mt-1 text-brand-text-muted">
@@ -86,13 +78,11 @@ export function CodeExample() {
               <div className="mt-1">
                 <span className="text-green-400">{"  "}✓</span>{" "}
                 <span className="text-brand-text-primary">user-model</span>{" "}
-                <span className="text-brand-text-muted">(claude)</span>{" "}
                 <span className="text-green-400">done 42s</span>
               </div>
               <div>
                 <span className="text-green-400">{"  "}✓</span>{" "}
                 <span className="text-brand-text-primary">product-model</span>{" "}
-                <span className="text-brand-text-muted">(gemini)</span>{" "}
                 <span className="text-green-400">done 38s</span>
               </div>
 
@@ -103,7 +93,6 @@ export function CodeExample() {
               <div className="mt-1">
                 <span className="text-green-400">{"  "}✓</span>{" "}
                 <span className="text-brand-text-primary">auth-endpoints</span>{" "}
-                <span className="text-brand-text-muted">(claude)</span>{" "}
                 <span className="text-green-400">done 1m 15s</span>
               </div>
 

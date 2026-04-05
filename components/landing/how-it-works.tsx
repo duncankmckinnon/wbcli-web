@@ -1,4 +1,7 @@
+"use client";
+
 import type { ReactNode } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const steps: { number: string; title: string; description: ReactNode; icon: ReactNode }[] = [
   {
@@ -48,7 +51,47 @@ const steps: { number: string; title: string; description: ReactNode; icon: Reac
   },
 ];
 
+const pipelineStages = [
+  { label: "start", type: "fixed" as const },
+  { label: "test", type: "optional" as const },
+  { label: "implement", type: "fixed" as const },
+  { label: "test", type: "fixed" as const },
+  { label: "fix", type: "optional" as const },
+  { label: "review", type: "fixed" as const },
+  { label: "fix", type: "optional" as const },
+  { label: "merge", type: "fixed" as const },
+  { label: "done", type: "fixed" as const },
+];
+
 export function HowItWorks() {
+  const pipelineRef = useRef<HTMLDivElement>(null);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const el = pipelineRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          // Map how far the element is through the viewport to 0–1
+          const rect = entry.boundingClientRect;
+          const viewportH = window.innerHeight;
+          // Element top relative to viewport bottom → 0 when entering, 1 when fully past center
+          const raw = (viewportH - rect.top) / (viewportH * 0.6);
+          setProgress(Math.min(1, Math.max(0, raw)));
+        }
+      },
+      { threshold: Array.from({ length: 20 }, (_, i) => i / 19) }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const visibleCount = Math.floor(progress * pipelineStages.length);
+
   return (
     <section className="px-6 py-24 lg:px-8">
       <div className="mx-auto max-w-5xl">
@@ -87,6 +130,70 @@ export function HowItWorks() {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Pipeline visualization */}
+        <div ref={pipelineRef} className="mt-20">
+          <h3 className="text-center text-lg font-semibold text-brand-text-secondary mb-8">
+            The agent pipeline
+          </h3>
+          <div className="flex items-center justify-center gap-1 sm:gap-2 flex-wrap">
+            {pipelineStages.map((stage, i) => {
+              const visible = i < visibleCount;
+              const isOptional = stage.type === "optional";
+
+              return (
+                <div key={`${stage.label}-${i}`} className="flex items-center gap-1 sm:gap-2">
+                  {/* Stage node */}
+                  <div
+                    className={`
+                      flex items-center justify-center rounded-lg px-3 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-mono font-medium
+                      transition-all duration-500 ease-out
+                      ${visible
+                        ? isOptional
+                          ? "bg-brand-accent-secondary/15 border border-brand-accent-secondary/40 text-brand-accent-tertiary border-dashed"
+                          : "bg-brand-accent-primary/15 border border-brand-accent-primary/40 text-brand-accent-primary"
+                        : "bg-brand-bg-tertiary/30 border border-brand-bg-tertiary/50 text-brand-text-muted/30"
+                      }
+                    `}
+                  >
+                    {isOptional && visible && (
+                      <span className="mr-1 text-[10px] opacity-60">[</span>
+                    )}
+                    {stage.label}
+                    {isOptional && visible && (
+                      <span className="ml-1 text-[10px] opacity-60">]</span>
+                    )}
+                  </div>
+
+                  {/* Arrow between stages */}
+                  {i < pipelineStages.length - 1 && (
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      className={`shrink-0 transition-all duration-500 ${
+                        visible ? "text-brand-accent-primary/60" : "text-brand-bg-tertiary/30"
+                      }`}
+                    >
+                      <path
+                        d="M3 8h8M8 4l4 4-4 4"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          <p className="mt-4 text-center text-xs text-brand-text-muted">
+            <span className="border border-dashed border-brand-accent-secondary/40 rounded px-1.5 py-0.5 mr-1">[optional]</span>
+            stages run only when needed
+          </p>
         </div>
       </div>
     </section>

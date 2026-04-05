@@ -19,14 +19,14 @@ export function Hero() {
       <div className="absolute inset-0 -z-10 bg-gradient-to-b from-brand-bg-primary via-brand-bg-primary to-brand-bg-secondary" />
 
       <div className="mx-auto max-w-4xl text-center">
-        <h1 className="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl leading-[1.3]">
-          <span className="hero-line-1 block bg-gradient-to-r from-brand-accent-primary to-brand-accent-secondary bg-clip-text text-transparent">
+        <h1 className="text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
+          <span className="hero-line-1 block pb-2 bg-gradient-to-r from-brand-accent-primary to-brand-accent-secondary bg-clip-text text-transparent">
             Ultra-lightweight
           </span>
-          <span className="hero-line-2 block">
+          <span className="hero-line-2 block py-2">
             Multi-agent Orchestrator
           </span>
-          <span className="hero-line-3 block bg-gradient-to-r from-brand-accent-secondary to-brand-accent-tertiary bg-clip-text text-transparent">
+          <span className="hero-line-3 block pt-2 bg-gradient-to-r from-brand-accent-secondary to-brand-accent-tertiary bg-clip-text text-transparent">
             Anywhere you work
           </span>
         </h1>
@@ -48,7 +48,7 @@ export function Hero() {
         </div>
 
         {/* CTA buttons */}
-        <div className="mt-8 flex items-center justify-center gap-4">
+        <div className="hero-fade mt-8 flex flex-wrap items-center justify-center gap-4">
           <Link
             href="/docs/getting-started"
             className="rounded-lg bg-gradient-to-r from-brand-accent-primary to-brand-accent-secondary px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-accent-primary/25 transition-all hover:shadow-brand-accent-primary/40 hover:brightness-110"
@@ -61,6 +61,18 @@ export function Hero() {
           >
             View on GitHub
           </Link>
+          <a
+            href="/downloads/use-workbench-skill.zip"
+            download
+            className="inline-flex items-center gap-2 rounded-lg border border-brand-accent-secondary/40 px-6 py-3 text-sm font-semibold text-brand-accent-tertiary transition-colors hover:bg-brand-accent-secondary/10 hover:border-brand-accent-secondary"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            Download Skill
+          </a>
         </div>
 
         {/* GitHub stars counter — only renders when ≥ 25 stars */}
@@ -89,14 +101,13 @@ export function Hero() {
 
             {/* Plan info */}
             <div className="mt-4 space-y-0.5 text-brand-text-secondary">
-              <div>Plan: <span className="text-brand-text-primary">API Authentication System</span></div>
-              <div>Tasks: <span className="text-brand-text-primary">5</span> across <span className="text-brand-text-primary">3</span> wave(s)</div>
+              <div>Tasks: <span className="text-brand-text-primary">4</span> across <span className="text-brand-text-primary">2</span> wave(s)</div>
               <div>Concurrency: <span className="text-brand-text-primary">4</span></div>
             </div>
 
             {/* Wave 1 */}
             <div className="mt-5">
-              <div className="text-cyan-400 font-bold">—— Wave 1/3 (3 tasks) ——</div>
+              <div className="text-cyan-400 font-bold">—— Wave 1/2 (3 tasks) ——</div>
               <div className="mt-3">
                 <div className="text-brand-accent-primary text-center mb-1">Workbench</div>
                 <table className="w-full border-collapse text-left">
@@ -110,19 +121,19 @@ export function Hero() {
                   </thead>
                   <tbody>
                     <tr className="border-b border-brand-bg-tertiary/50">
-                      <td className="py-1 pr-4 text-brand-text-primary">User model</td>
+                      <td className="py-1 pr-4 text-brand-text-primary">Task 1</td>
                       <td className="py-1 pr-4 text-green-400">done</td>
                       <td className="py-1 pr-4 text-brand-text-muted">3m42s</td>
                       <td className="py-1 text-brand-text-muted">impl:ok → test:pass → review:pass</td>
                     </tr>
                     <tr className="border-b border-brand-bg-tertiary/50">
-                      <td className="py-1 pr-4 text-brand-text-primary">Auth tokens</td>
+                      <td className="py-1 pr-4 text-brand-text-primary">Task 2</td>
                       <td className="py-1 pr-4 text-green-400">done</td>
                       <td className="py-1 pr-4 text-brand-text-muted">4m18s</td>
                       <td className="py-1 text-brand-text-muted">impl:ok → test:fail → fix → test:pass → review:pass</td>
                     </tr>
                     <tr>
-                      <td className="py-1 pr-4 text-brand-text-primary">Shared types</td>
+                      <td className="py-1 pr-4 text-brand-text-primary">Task 3</td>
                       <td className="py-1 pr-4 text-green-400">done</td>
                       <td className="py-1 pr-4 text-brand-text-muted">2m05s</td>
                       <td className="py-1 text-brand-text-muted">impl:ok → test:pass → review:pass</td>
@@ -130,23 +141,14 @@ export function Hero() {
                   </tbody>
                 </table>
               </div>
-              <div className="mt-3 text-brand-text-secondary">
-                Merging <span className="font-bold">3 branch</span>(es) into scaffold...
-              </div>
-              <div className="text-brand-text-muted">
-                {"  "}✓ wb/user-model — Merged cleanly.
-              </div>
-              <div className="text-brand-text-muted">
-                {"  "}✓ wb/auth-tokens — Merged cleanly.
-              </div>
-              <div className="text-brand-text-muted">
-                {"  "}✓ wb/shared-types — Merged cleanly.
+              <div className="mt-3 text-brand-text-muted">
+                {"  "}✓ Merged 3 branches cleanly.
               </div>
             </div>
 
             {/* Wave 2 */}
             <div className="mt-5">
-              <div className="text-cyan-400 font-bold">—— Wave 2/3 (1 task) ——</div>
+              <div className="text-cyan-400 font-bold">—— Wave 2/2 (1 task) ——</div>
               <div className="mt-3">
                 <table className="w-full border-collapse text-left">
                   <thead>
@@ -159,35 +161,10 @@ export function Hero() {
                   </thead>
                   <tbody>
                     <tr>
-                      <td className="py-1 pr-4 text-brand-text-primary">Auth middleware</td>
+                      <td className="py-1 pr-4 text-brand-text-primary">Task 4</td>
                       <td className="py-1 pr-4 text-yellow-400">running</td>
-                      <td className="py-1 pr-4 text-brand-text-muted">2m31s</td>
-                      <td className="py-1 text-brand-text-muted">impl:ok → test:pass → <span className="text-yellow-400">review...</span></td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            {/* Wave 3 */}
-            <div className="mt-5">
-              <div className="text-brand-text-muted font-bold">—— Wave 3/3 (1 task) ——</div>
-              <div className="mt-3">
-                <table className="w-full border-collapse text-left">
-                  <thead>
-                    <tr className="border-b border-brand-bg-tertiary">
-                      <th className="py-1 pr-4 text-brand-text-secondary font-normal">Task</th>
-                      <th className="py-1 pr-4 text-brand-text-secondary font-normal">Status</th>
-                      <th className="py-1 pr-4 text-brand-text-secondary font-normal">Time</th>
-                      <th className="py-1 text-brand-text-secondary font-normal">Pipeline</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td className="py-1 pr-4 text-brand-text-primary">API endpoints</td>
-                      <td className="py-1 pr-4 text-brand-text-muted">waiting</td>
-                      <td className="py-1 pr-4 text-brand-text-muted">—</td>
-                      <td className="py-1 text-brand-text-muted">—</td>
+                      <td className="py-1 pr-4 text-brand-text-muted">1m47s</td>
+                      <td className="py-1 text-brand-text-muted">impl:ok → <span className="text-yellow-400">test...</span></td>
                     </tr>
                   </tbody>
                 </table>
