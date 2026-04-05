@@ -10,10 +10,12 @@ Before installing workbench, make sure you have the following:
 
 - **Python 3.11+** — verify with `python3 --version`
 - **Git** — workbench uses git worktrees for task isolation
+- **tmux** — used for live monitoring of agent sessions (`brew install tmux` on macOS, `apt install tmux` on Linux, or via WSL on Windows)
 - **At least one supported agent CLI:**
   - [Claude Code](https://docs.anthropic.com/en/docs/claude-code) — `claude` command
   - [Gemini CLI](https://github.com/google-gemini/gemini-cli) — `gemini` command
   - [OpenAI Codex](https://github.com/openai/codex) — `codex` command
+  - Any custom CLI that supports dispatch — see [Agents](/docs/agents#custom-agents)
 
 Your agent CLI must be installed and authenticated separately. Workbench dispatches work to these agents — it does not bundle them.
 

@@ -18,6 +18,10 @@ export const metadata: Metadata = {
   title: "workbench — Multi-agent orchestrator",
   description:
     "Dispatch AI coding agents in parallel across isolated git worktrees. Supports Claude Code, Gemini CLI, and Codex.",
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
   openGraph: {
     title: "workbench — Multi-agent orchestrator",
     description:

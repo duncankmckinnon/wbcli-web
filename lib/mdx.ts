@@ -1,6 +1,7 @@
 import React from 'react';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import rehypePrettyCode from 'rehype-pretty-code';
+import remarkGfm from 'remark-gfm';
 
 interface MDXContentProps {
   source: string;
@@ -13,6 +14,7 @@ export function MDXContent({ source, components }: MDXContentProps) {
     components,
     options: {
       mdxOptions: {
+        remarkPlugins: [remarkGfm],
         rehypePlugins: [[rehypePrettyCode, { theme: 'github-dark' }]],
       },
     },

@@ -18,8 +18,12 @@ export function CodeExample() {
             </div>
             <div className="p-6 font-mono text-sm leading-relaxed">
               <div>
-                <span className="text-green-400"># Add user authentication</span>
+                <span className="text-green-400">## Context</span>
               </div>
+              <div className="mt-1 text-brand-text-muted">
+                Building a REST API with Express and TypeScript...
+              </div>
+
               <div className="mt-4">
                 <span className="text-green-400">## Task: User model</span>
               </div>
@@ -38,12 +42,12 @@ export function CodeExample() {
                 <span className="text-green-400">## Task: Auth endpoints</span>
               </div>
               <div className="mt-1">
-                <span className="text-brand-text-primary">Depends:</span>{" "}
-                <span className="text-brand-text-secondary">user-model</span>
-              </div>
-              <div>
                 <span className="text-brand-text-primary">Files:</span>{" "}
                 <span className="text-brand-text-secondary">src/routes/auth.ts</span>
+              </div>
+              <div>
+                <span className="text-brand-text-primary">Depends:</span>{" "}
+                <span className="text-brand-text-secondary">user-model</span>
               </div>
               <div className="mt-1 text-brand-text-muted">
                 Implement login, register, and logout
@@ -61,42 +65,60 @@ export function CodeExample() {
                 terminal
               </span>
             </div>
-            <div className="p-6 font-mono text-sm leading-relaxed">
+            <div className="p-6 font-mono text-sm leading-relaxed overflow-x-auto">
               <div>
                 <span className="text-brand-text-muted">$</span>{" "}
                 <span className="text-brand-text-primary">wb run plan.md</span>
               </div>
 
-              <div className="mt-4">
-                <span className="text-brand-text-secondary">Wave 1</span>
-                <span className="text-brand-text-muted"> — 2 tasks in parallel</span>
-              </div>
-              <div className="mt-1">
-                <span className="text-green-400">{"  "}✓</span>{" "}
-                <span className="text-brand-text-primary">user-model</span>{" "}
-                <span className="text-green-400">done 42s</span>
-              </div>
-              <div>
-                <span className="text-green-400">{"  "}✓</span>{" "}
-                <span className="text-brand-text-primary">product-model</span>{" "}
-                <span className="text-green-400">done 38s</span>
+              <div className="mt-4 space-y-0.5 text-brand-text-secondary">
+                <div>Tasks: <span className="text-brand-text-primary">2</span> across <span className="text-brand-text-primary">2</span> wave(s)</div>
               </div>
 
               <div className="mt-4">
-                <span className="text-brand-text-secondary">Wave 2</span>
-                <span className="text-brand-text-muted"> — 1 task</span>
-              </div>
-              <div className="mt-1">
-                <span className="text-green-400">{"  "}✓</span>{" "}
-                <span className="text-brand-text-primary">auth-endpoints</span>{" "}
-                <span className="text-green-400">done 1m 15s</span>
+                <div className="text-cyan-400 font-bold">—— Wave 1/2 (1 task) ——</div>
+                <table className="w-full mt-2 text-left">
+                  <thead>
+                    <tr className="border-b border-brand-bg-tertiary">
+                      <th className="py-1 pr-3 text-brand-text-secondary font-normal">Task</th>
+                      <th className="py-1 pr-3 text-brand-text-secondary font-normal">Status</th>
+                      <th className="py-1 text-brand-text-secondary font-normal">Pipeline</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="py-1 pr-3 text-brand-text-primary">User model</td>
+                      <td className="py-1 pr-3 text-green-400">done</td>
+                      <td className="py-1 text-brand-text-muted">impl:ok → test:pass → review:pass</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div className="mt-2 text-brand-text-muted">
+                  {"  "}✓ Merged 1 branch cleanly.
+                </div>
               </div>
 
-              <div className="mt-4 text-green-400">
-                ✓ All tasks complete
-              </div>
-              <div className="mt-1 text-brand-text-muted">
-                3 branches merged into main
+              <div className="mt-4">
+                <div className="text-cyan-400 font-bold">—— Wave 2/2 (1 task) ——</div>
+                <table className="w-full mt-2 text-left">
+                  <thead>
+                    <tr className="border-b border-brand-bg-tertiary">
+                      <th className="py-1 pr-3 text-brand-text-secondary font-normal">Task</th>
+                      <th className="py-1 pr-3 text-brand-text-secondary font-normal">Status</th>
+                      <th className="py-1 text-brand-text-secondary font-normal">Pipeline</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="py-1 pr-3 text-brand-text-primary">Auth endpoints</td>
+                      <td className="py-1 pr-3 text-green-400">done</td>
+                      <td className="py-1 text-brand-text-muted">impl:ok → test:fail → fix → test:pass → review:pass</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div className="mt-2 text-brand-text-muted">
+                  {"  "}✓ Merged 1 branch cleanly.
+                </div>
               </div>
             </div>
           </div>
