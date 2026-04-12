@@ -1,0 +1,126 @@
+---
+title: Architecture
+description: How sessions, waves, tasks, branches, roles, profiles, and agents fit together.
+order: 3
+parent: getting-started
+---
+
+## Overview
+
+A single `wb run` starts a **session**, which creates a session branch and groups tasks into sequential **waves**. Each **task** runs in its own isolated worktree branch, executing through a pipeline of **roles**. Which **agent** fulfills each role is determined by the active **profile**.
+
+```mermaid
+%%{init: {'flowchart': {'nodeSpacing': 30, 'rankSpacing': 40, 'curve': 'basis'}}}%%
+flowchart TB
+    Plan[plan.md]
+    Profile[profile.yaml]
+
+    Plan -->|kicks off| Session
+    Plan -->|parsed into| Wave
+    Plan -->|defines| Task
+
+    Session[Session]
+    Wave[Wave]
+    SessionBranch[Session Branch]
+    Base[Base Branch]
+    Task[Task]
+    TaskBranch[Task Branch]
+    Role[Role]
+    Agent[Agent]
+    AgentConfig[agents.yaml]
+
+    Session -->|creates| SessionBranch
+    Session -->|contains| Wave
+    Wave -->|contains| Task
+    Task -->|creates| TaskBranch
+    TaskBranch -.->|merged into| SessionBranch
+    SessionBranch -->|pull request| Base
+
+    Task -->|executes via| Role
+    Profile -->|configures| Role
+    Profile -->|maps role to| Agent
+    Role -->|dispatched to| Agent
+    Agent ~~~ AgentConfig
+    AgentConfig -->|defines| Agent
+
+    classDef branch fill:#1e293b,stroke:#6366f1,color:#f1f5f9
+    classDef exec fill:#312e81,stroke:#8b5cf6,color:#f1f5f9
+    classDef config fill:#164e63,stroke:#06b6d4,color:#f1f5f9
+    classDef input fill:#3f1e5c,stroke:#a78bfa,color:#f1f5f9
+    class SessionBranch,TaskBranch,Base branch
+    class Session,Wave,Task exec
+    class Profile,AgentConfig,Role,Agent config
+    class Plan input
+```
+
+## Concepts
+
+### Plan
+
+A markdown file (e.g. `plan.md`) that describes the work to be done. Contains context, conventions, and task definitions with file ownership and dependencies. Parsed by workbench to build the task graph. See [Plans](/docs/plan-format) for details.
+
+### Session
+
+A single `wb run` invocation. Workbench parses the plan, creates a session branch, and executes waves sequentially until all tasks complete or fail.
+
+### Session Branch
+
+Where all task work is merged. Named `workbench-N` by default, or whatever you pass to `--name`. This is the branch you review and open a pull request from when the plan is done.
+
+### Base Branch
+
+The branch workbench starts from when creating the session branch. Defaults to `main`, or whatever you pass to `--base`. The session branch is ultimately merged back into base via a pull request.
+
+### Wave
+
+A group of tasks that run in parallel. Waves execute sequentially — each wave waits for the previous wave to finish and merge. Tasks within a single wave run simultaneously in isolated worktrees.
+
+### Task
+
+A unit of work described in the plan. Each task has a title, description, file ownership (`Files:`), and optional dependencies (`Depends:`). A task becomes an independent agent session that can only see its own description.
+
+### Task Branch
+
+An isolated git worktree branch created for one task. Named `wb/task-N-slug`. When a task completes successfully, its branch is merged into the session branch.
+
+### Role
+
+A stage in the task execution pipeline. Workbench defines five roles:
+
+- **implementor** — writes the code
+- **tester** — writes and runs tests
+- **reviewer** — reviews the diff for correctness
+- **fixer** — addresses failures from tester or reviewer
+- **merger** — resolves merge conflicts between parallel branches
+
+### Profile
+
+Configuration that maps each role to an agent. Stored in `.workbench/profile.yaml`. Different profiles can be used for different workflows (e.g., fast profile, security profile).
+
+### Agent Config
+
+`.workbench/agents.yaml` — registers custom agent adapters so they can be used in profiles and `--agent` flags. Built-in adapters (Claude, Gemini, Codex, Cursor) are available without any config. See [Agents](/docs/agents#custom-agents).
+
+### Agent
+
+The actual CLI that fulfills a role. Built-in support for Claude Code, Gemini CLI, OpenAI Codex, and Cursor CLI. Custom agents can be added via `.workbench/agents.yaml`.
+
+## Execution Flow
+
+1. `wb run plan.md` parses the plan into a task graph
+2. Tasks are grouped into waves based on dependencies
+3. A session branch is created from the base branch
+4. For each wave:
+   - Each task gets an isolated worktree and task branch
+   - Each task runs through the pipeline: implement → test → review → fix
+   - The role at each stage uses the agent specified in the profile
+   - Successful task branches are merged into the session branch
+   - Merge conflicts are resolved by the merger role
+5. When all waves complete, the session branch is ready for you to review and merge
+
+## Related
+
+- **[Plans](/docs/plan-format)** — how to write plans with tasks, dependencies, and file ownership
+- **[Running Plans](/docs/running-plans)** — monitoring, failure handling, and merging
+- **[Agents](/docs/agents)** — configuring which CLIs handle each role
+- **[Profiles](/docs/profiles)** — saving per-project agent configurations

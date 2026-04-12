@@ -1,4 +1,5 @@
 import type { ComponentPropsWithoutRef } from "react";
+import { Mermaid } from "./mermaid";
 
 function slugify(text: string): string {
   return text
@@ -91,4 +92,5 @@ export const mdxComponents: Record<string, React.ComponentType<any>> = {
   tr: (props: ComponentPropsWithoutRef<"tr">) => (
     <tr className="hover:bg-brand-bg-secondary/50" {...props} />
   ),
+  Mermaid,
 };
