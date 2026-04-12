@@ -10,7 +10,7 @@ parent: getting-started
 | Command | Description |
 |---|---|
 | `wb run <plan>` | Execute a plan with parallel agents |
-| `wb merge -b <branch>` | Merge completed-but-unmerged task branches |
+| `wb merge -b <branch>` | Merge completed-but-unmerged task branches (auto-detects plan) |
 | `wb preview <plan>` | Dry-run: show parsed tasks and waves |
 | `wb setup` | Create `.workbench/`, install skills, and optionally create a profile |
 | `wb status` | Show active worktrees |
@@ -49,7 +49,9 @@ wb run <plan.md> [options]
 | `--base BRANCH` | Base branch to start from (default: `main`) |
 | `--local` | Branch from local ref instead of fetching origin |
 | `-b NAME` / `--session-branch` | Resume an existing session branch |
-| `-w N` / `--start-wave` | Skip already-completed waves |
+| `-w N` / `--wave` | Run only wave N (clamped to valid range) |
+| `--start-wave N` | Start from wave N, run through end (default: 1) |
+| `--end-wave N` | Stop after wave N (default: last wave) |
 | `--retry-failed` | Auto-retry tasks that crashed (not those that exhausted fix retries) |
 | `--fail-fast` | Stop after the first wave with any failed tasks |
 | `--only-failed` | Skip completed tasks from a prior run (requires `-b`) |
@@ -75,10 +77,22 @@ Run with TDD mode and skip the review stage:
 wb run plan.md --tdd --skip-review
 ```
 
-Resume a previously interrupted session from wave 3:
+Resume a previously interrupted session from wave 3 through the end:
 
 ```bash
-wb run plan.md -b workbench-1 -w 3
+wb run plan.md -b workbench-1 --start-wave 3
+```
+
+Run only a specific wave in an existing session:
+
+```bash
+wb run plan.md -b workbench-1 -w 2
+```
+
+Run a range of waves:
+
+```bash
+wb run plan.md -b workbench-1 --start-wave 2 --end-wave 4
 ```
 
 Retry only the tasks that failed in a previous run:
@@ -95,7 +109,7 @@ wb run plan.md --reviewer-directive "Focus on error handling and edge cases"
 
 ## wb merge
 
-Merge completed-but-unmerged task branches into the session branch. Useful when tasks completed but merging was interrupted or skipped.
+Merge completed-but-unmerged task branches into the session branch. Useful when tasks completed but merging was interrupted or skipped. The plan is auto-detected from the session branch unless you specify `--plan`.
 
 ```bash
 wb merge -b <session-branch> [options]
@@ -106,6 +120,7 @@ wb merge -b <session-branch> [options]
 | Flag | Description |
 |---|---|
 | `-b NAME` / `--session-branch` | Session branch to merge into (required) |
+| `--plan PATH` | Plan file to determine status file (auto-detected if omitted) |
 | `--agent CMD` | Agent CLI for conflict resolution (default: `claude`) |
 | `--no-tmux` | Run resolver agents as subprocesses instead of tmux |
 | `--keep-branches` | Keep task branches after merging |
