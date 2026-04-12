@@ -95,7 +95,16 @@ A stage in the task execution pipeline. Workbench defines five roles:
 
 ### Profile
 
-Configuration that maps each role to an agent. Stored in `.workbench/profile.yaml`. Different profiles can be used for different workflows (e.g., fast profile, security profile).
+Configuration that maps each role to an agent. Stored in `.workbench/profile.yaml`.
+
+Profiles can also be **named** for different workflows — create `profile.<name>.yaml` and use it with `--profile-name <name>`:
+
+```bash
+wb profile init --name fast --set reviewer.agent=gemini
+wb run plan.md --profile-name fast
+```
+
+This is useful when you want different agent configurations for different tasks (e.g., a `fast` profile for quick iterations, a `security` profile with stricter reviewer directives). See [Profiles](/docs/profiles) for full details.
 
 ### Agent Config
 
@@ -103,7 +112,17 @@ Configuration that maps each role to an agent. Stored in `.workbench/profile.yam
 
 ### Agent
 
-The actual CLI that fulfills a role. Built-in support for Claude Code, Gemini CLI, OpenAI Codex, and Cursor CLI. Custom agents can be added via `.workbench/agents.yaml`.
+The actual CLI that fulfills a role. Workbench ships with built-in adapters for some providers, and the option to add any other cli command based dispatch: 
+
+| Name | Command | Provider |
+|---|---|---|
+| claude *(default)* | `claude` | Anthropic |
+| gemini | `gemini` | Google |
+| codex | `codex` | OpenAI |
+| cursor | `agent` | Cursor |
+| &lt;other name&gt; | `cli-command` | your provider |
+
+Claude Code is the default when no profile or `--agent` flag is specified. Custom agents can be added via `.workbench/agents.yaml` — see [Agents](/docs/agents#custom-agents).
 
 ## Execution Flow
 
