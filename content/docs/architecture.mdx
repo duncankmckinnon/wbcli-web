@@ -9,6 +9,8 @@ parent: getting-started
 
 A single `wb run` starts a **session**, which creates a session branch and groups tasks into sequential **waves**. Each **task** runs in its own isolated worktree branch, executing through a pipeline of **roles**. Which **agent** fulfills each role is determined by the active **profile**.
 
+<DiagramContainer>
+
 ```mermaid
 %%{init: {'flowchart': {'nodeSpacing': 30, 'rankSpacing': 40, 'curve': 'basis'}}}%%
 flowchart TB
@@ -52,6 +54,8 @@ flowchart TB
     class Profile,AgentConfig,Role,Agent config
     class Plan input
 ```
+
+</DiagramContainer>
 
 ## Concepts
 
