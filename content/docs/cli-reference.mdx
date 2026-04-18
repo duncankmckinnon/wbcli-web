@@ -58,6 +58,7 @@ wb run <plan.md> [options]
 | `--task ID` | Run only specific tasks by ID or slug (repeatable) |
 | `--cleanup` | Remove worktrees after completion |
 | `--keep-branches` | Keep task branches after merging (default: auto-delete on success) |
+| `--push` | Push the session branch to origin after merging (sets upstream tracking) |
 | `--repo PATH` | Repository path (auto-detected if omitted) |
 | `--profile PATH` | Use a specific profile.yaml |
 | `--profile-name NAME` | Use a named profile (`profile.<name>.yaml`) |
@@ -124,6 +125,7 @@ wb merge -b <session-branch> [options]
 | `--agent CMD` | Agent CLI for conflict resolution (default: `claude`) |
 | `--no-tmux` | Run resolver agents as subprocesses instead of tmux |
 | `--keep-branches` | Keep task branches after merging |
+| `--push` | Push the session branch to origin after merging (sets upstream tracking) |
 | `--repo PATH` | Repository path (auto-detected if omitted) |
 
 ## wb preview
@@ -146,7 +148,7 @@ wb setup [options]
 
 | Flag | Description |
 |---|---|
-| `--agent NAME` | Target platform: `claude`, `gemini`, `cursor`, `codex`, `manual` (auto-detected if omitted) |
+| `--agent NAME` | Target platform: `claude`, `gemini`, `cursor`, `codex`, `copilot`, `manual` (auto-detected if omitted) |
 | `--global` | Install skills to user-level paths only (skip `.workbench/` creation) |
 | `--symlink` | Symlink instead of copy (stays in sync with package updates) |
 | `--profile` | Also create a profile.yaml with the detected agent |
@@ -197,7 +199,7 @@ Manage agent adapters — built-in and custom CLI integrations.
 
 ### wb agents init
 
-Create `.workbench/agents.yaml` pre-populated with configs for all built-in adapters (Claude, Gemini, Codex, Cursor). Use as a starting point for customization.
+Create `.workbench/agents.yaml` pre-populated with configs for all built-in adapters (Claude, Gemini, Codex, Cursor, Copilot). Use as a starting point for customization.
 
 ```bash
 wb agents init [--repo PATH]

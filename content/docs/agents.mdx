@@ -6,7 +6,7 @@ order: 6
 
 ## Supported Agents
 
-Workbench ships with built-in adapters for four agent CLIs, plus support for any custom CLI:
+Workbench ships with built-in adapters for five agent CLIs, plus support for any custom CLI:
 
 | Agent | Command | Provider |
 |---|---|---|
@@ -14,6 +14,7 @@ Workbench ships with built-in adapters for four agent CLIs, plus support for any
 | Gemini CLI | `gemini` | Google |
 | OpenAI Codex | `codex` | OpenAI |
 | Cursor CLI | `agent` | Cursor |
+| Copilot CLI | `copilot` | GitHub |
 
 Each agent goes through the same pipeline stages: **implement → test → review → fix**. Workbench treats all agents as interchangeable — any agent can fill any role.
 
@@ -24,6 +25,7 @@ wb run plan.md --agent claude     # default
 wb run plan.md --agent gemini
 wb run plan.md --agent codex
 wb run plan.md --agent cursor
+wb run plan.md --agent copilot
 ```
 
 ## Setting Up Agents
@@ -35,6 +37,7 @@ wb setup                           # auto-detect agent, install skills locally
 wb setup --agent claude            # install to <repo>/.claude/skills/ + .agents/skills/
 wb setup --agent gemini            # install to <repo>/.agents/skills/
 wb setup --agent cursor            # install to <repo>/.cursor/skills/
+wb setup --agent copilot           # install to <repo>/.github/skills/ + .agents/skills/
 wb setup --agent manual            # print paths for manual setup
 wb setup --global                  # install skills to user-level paths only
 wb setup --global --agent claude   # install to ~/.claude/skills/
@@ -58,7 +61,7 @@ wb agents add my-agent --command new-cli   # update an existing agent
 wb agents remove my-agent         # remove a custom agent
 ```
 
-`wb agents init` creates `.workbench/agents.yaml` pre-populated with the configs for all built-in adapters (Claude, Gemini, Codex, Cursor). Use this as a starting point to customize command flags, output parsing, or to add your own agents.
+`wb agents init` creates `.workbench/agents.yaml` pre-populated with the configs for all built-in adapters (Claude, Gemini, Codex, Cursor, Copilot). Use this as a starting point to customize command flags, output parsing, or to add your own agents.
 
 ## Custom Agents
 

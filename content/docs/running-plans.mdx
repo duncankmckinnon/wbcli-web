@@ -96,6 +96,17 @@ wb merge -b workbench-1 --agent gemini
 wb merge -b workbench-1 --no-tmux
 ```
 
+### Pushing to origin
+
+Use `--push` on either `wb run` or `wb merge` to push the session branch to origin after all merges complete:
+
+```bash
+wb run plan.md --push
+wb merge -b workbench-1 --push
+```
+
+This sets upstream tracking so subsequent `git push` commands work without additional flags.
+
 ## Branching Strategy
 
 When you run `wb run plan.md`, workbench creates this branch structure:
