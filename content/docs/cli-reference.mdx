@@ -10,6 +10,7 @@ parent: getting-started
 | Command | Description |
 |---|---|
 | `wb run <plan>` | Execute a plan with parallel agents |
+| `wb plan <prompt>` | Generate a workbench plan from a prompt or existing document using a planner agent |
 | `wb merge -b <branch>` | Merge completed-but-unmerged task branches (auto-detects plan) |
 | `wb preview <plan>` | Dry-run: show parsed tasks and waves |
 | `wb setup` | Create `.workbench/`, install skills, and optionally create a profile |
@@ -106,6 +107,54 @@ Add custom reviewer instructions:
 
 ```bash
 wb run plan.md --reviewer-directive "Focus on error handling and edge cases"
+```
+
+## wb plan
+
+Dispatch a planner agent to generate a workbench plan. The planner surveys the repository, designs a task graph for parallel execution, and writes a plan markdown file you can review and run with `wb run`.
+
+```bash
+wb plan "<prompt>" [--from FILE] [options]
+```
+
+At least one of a prompt or `--from` is required.
+
+### Flags
+
+| Flag | Description |
+|---|---|
+| `--from FILE` | Transform an existing document (spec, draft, or rough plan) into workbench format |
+| `-n NAME` / `--name NAME` | Plan file name, written to `.workbench/plans/<name>.md` (default: `plan`) |
+| `--agent CMD` | Agent CLI to run the planner (default: `claude`) |
+| `--no-tmux` | Run the planner as a subprocess instead of in tmux |
+| `--repo PATH` | Repository path (auto-detected if omitted) |
+
+### Examples
+
+Generate a plan from a prompt:
+
+```bash
+wb plan "Add JWT authentication to the FastAPI app"
+```
+
+Convert an existing spec into a workbench plan:
+
+```bash
+wb plan --from docs/auth-spec.md --name auth
+```
+
+Combine a prompt with an existing document as seed material:
+
+```bash
+wb plan "Focus on security and edge cases" --from existing-spec.md --name secure-auth
+```
+
+After a plan is written, the CLI prints the path and suggested next commands:
+
+```bash
+cat .workbench/plans/plan.md      # review the generated plan
+wb preview .workbench/plans/plan.md
+wb run .workbench/plans/plan.md
 ```
 
 ## wb merge

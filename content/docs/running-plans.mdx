@@ -120,6 +120,8 @@ main (or --base branch)
 
 Each task gets its own branch and worktree. After a wave completes, successful task branches are merged into the session branch. The next wave branches from the updated session branch.
 
+Session branches are created without upstream tracking by default. Use `--push` to set upstream tracking when pushing to origin.
+
 | Flag | Session branch | Base | Source | Use case |
 |---|---|---|---|---|
 | *(default)* | `workbench-N` | `main` | `origin/main` (fetched) | Start from latest remote |
