@@ -10,7 +10,12 @@ Plans are markdown files with a specific structure. Workbench parses them into a
 
 Any `.md` file that follows the plan format can be used — name it however you like.
 
-> **Tip:** You don't have to write plans by hand. The `use-workbench` skill (installed by `wb setup`) lets your agent convert your ideas into workbench plans automatically. Just describe what you want to build and invoke `/use-workbench` — the agent will survey your codebase, design the task graph, and produce a ready-to-run plan.
+> **Tip:** You don't have to write plans by hand. Two options:
+>
+> - **`wb plan "<prompt>"`** — dispatches a planner agent from the CLI. Generates a plan at `.workbench/plans/plan.md`. Can also transform an existing document with `--from`. See [CLI Reference](/docs/cli-reference#wb-plan).
+> - **`/use-workbench` skill** — runs inside your agent session. Describe what you want to build and the agent produces a ready-to-run plan. See [Skills](/docs/skills#use-workbench).
+>
+> Both paths survey your codebase, design the task graph, and produce a plan in the format described below.
 
 For an overview of how plans, sessions, waves, tasks, branches, roles, profiles, and agents fit together, see [Architecture](/docs/architecture).
 
