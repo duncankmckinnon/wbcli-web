@@ -93,7 +93,7 @@ A stage in the task execution pipeline. Workbench defines five roles:
 
 - **implementor** — writes the code
 - **tester** — writes and runs tests
-- **reviewer** — reviews the diff for correctness
+- **reviewer** — reviews the diff for correctness; on retry attempts, narrows to the fixer's delta and prior feedback (see [Agents](/docs/agents#reviewer))
 - **fixer** — addresses failures from tester or reviewer
 - **merger** — resolves merge conflicts between parallel branches
 
@@ -112,7 +112,7 @@ This is useful when you want different agent configurations for different tasks 
 
 ### Agent Config
 
-`.workbench/agents.yaml` — registers custom agent adapters so they can be used in profiles and `--agent` flags. Built-in adapters (Claude, Gemini, Codex, Cursor) are available without any config. See [Agents](/docs/agents#custom-agents).
+`.workbench/agents.yaml` — registers custom agent adapters so they can be used in profiles and `--agent` flags. Built-in adapters (Claude, Gemini, Codex, Cursor, Copilot) are available without any config. See [Agents](/docs/agents#custom-agents).
 
 ### Agent
 
@@ -124,6 +124,7 @@ The actual CLI that fulfills a role. Workbench ships with built-in adapters for 
 | gemini | `gemini` | Google |
 | codex | `codex` | OpenAI |
 | cursor | `agent` | Cursor |
+| copilot | `copilot` | GitHub |
 | &lt;other name&gt; | `cli-command` | your provider |
 
 Claude Code is the default when no profile or `--agent` flag is specified. Custom agents can be added via `.workbench/agents.yaml` — see [Agents](/docs/agents#custom-agents).
