@@ -119,4 +119,6 @@ The agent reads the existing document, identifies independent units of work, det
 
 > "Run plan.md in TDD mode on the feature-auth branch"
 
+**CLI alternative:** If you prefer to generate a plan from the command line rather than from inside an agent session, use `wb plan "<prompt>"` or `wb plan --from <file>`. This dispatches a planner agent the same way the skill does, but without needing an active agent session. See [CLI Reference](/docs/cli-reference#wb-plan).
+
 See [Plan Format](/docs/plan-format) for details on the structure it generates.
