@@ -21,7 +21,7 @@ Before installing workbench, make sure you have the following:
   - [Gemini CLI](https://github.com/google-gemini/gemini-cli) — `gemini` command
   - [OpenAI Codex](https://github.com/openai/codex) — `codex` command
   - [Cursor CLI](https://cursor.com/docs/cli/overview) — `agent` command
-  - [Copilot CLI](https://github.com/features/copilot/cli) — `copilot` command
+  - [GitHub Copilot CLI](https://docs.github.com/en/copilot/github-copilot-in-the-cli) — `copilot` command
   - Any custom CLI that supports dispatch — see [Agents](/docs/agents#custom-agents)
 
 Your agent CLI must be installed and authenticated separately. Workbench dispatches work to these agents — it does not bundle them.
@@ -63,6 +63,8 @@ Repo is ready for workbench.
 ```
 
 ## Your First Plan
+
+> **Don't want to write the plan yourself?** Run `wb plan "describe what you want to build"` to have a planner agent survey your codebase and produce a ready-to-run plan at `.workbench/plans/plan.md`. You can also convert an existing spec with `wb plan --from spec.md`. See [CLI Reference](/docs/cli-reference#wb-plan) for full options.
 
 Create a plan file (e.g. `plan.md` or `.workbench/plan.md`) with these sections:
 
