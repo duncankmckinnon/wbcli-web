@@ -63,6 +63,18 @@ wb agents remove my-agent         # remove a custom agent
 
 `wb agents init` creates `.workbench/agents.yaml` pre-populated with the configs for all built-in adapters (Claude, Gemini, Codex, Cursor, Copilot). Use this as a starting point to customize command flags, output parsing, or to add your own agents.
 
+For example, the built-in Copilot adapter config looks like:
+
+```yaml
+agents:
+  copilot:
+    command: copilot
+    args: ["-p", "{prompt}", "--output-format", "json", "--no-ask-user"]
+    output_format: json
+    json_result_key: result
+    json_cost_key: cost_usd
+```
+
 ## Custom Agents
 
 Define adapters for any CLI tool using the `wb agents add` command or by editing `.workbench/agents.yaml` directly:
@@ -178,7 +190,12 @@ Runs the project's test suite against the implementation. If tests are missing, 
 
 ### Reviewer
 
-Reviews the git diff produced by the implementor. Checks for correctness, style adherence, and potential issues. Reports pass/fail with actionable feedback.
+Operates in two modes depending on the attempt number:
+
+- **Initial review (attempt 1):** performs a full, comprehensive review of the entire task diff against the base branch. Checks for correctness, style adherence, and potential issues.
+- **Follow-up review (attempt 2+):** after a fixer commits changes, the reviewer sees only the fixer's delta (changes since the prior review SHA) plus the prior reviewer's feedback. Verifies whether each prior feedback item was addressed rather than re-reviewing the whole task. New issues are flagged only if the fixer introduced a regression in the changed lines.
+
+This is automatic — no flag is required. Follow-up narrowing prevents reviewer churn where each retry attempt raises new, unrelated issues instead of confirming fixes.
 
 ### Fixer
 
