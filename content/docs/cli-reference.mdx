@@ -326,6 +326,7 @@ wb profile show [options]
 |---|---|
 | `--name NAME` | Show a named profile |
 | `--profile PATH` | Path to a specific profile.yaml |
+| `--full` | Show the complete directive text for each role, including built-in defaults |
 | `--repo PATH` | Repository path (auto-detected if omitted) |
 
 ### wb profile set
@@ -336,11 +337,15 @@ Update a profile field:
 wb profile set <key> <value> [options]
 ```
 
-Roles: `implementor`, `tester`, `reviewer`, `fixer`
+The key uses dot notation: `<role>.<field>` or `<role>.<sub_mode>.<field>`.
+
+Roles: `implementor`, `tester`, `reviewer`, `fixer`, `merger`, `planner`
 
 ```bash
-wb profile set implementor gemini
-wb profile set reviewer claude
+wb profile set implementor.agent gemini
+wb profile set reviewer.agent claude
+wb profile set tester.tdd.directive "Use pytest fixtures for shared setup."
+wb profile set reviewer.followup.directive "Focus only on changes since last review."
 ```
 
 | Flag | Description |

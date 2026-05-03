@@ -63,6 +63,7 @@ Use `directive` to replace the default instructions, or `directive_extend` to ap
 | `reviewer` | Reviews the diff for correctness and quality |
 | `fixer` | Addresses feedback from failed tests or reviews |
 | `merger` | Resolves merge conflicts between parallel branches |
+| `planner` | Generates workbench plans (`wb plan`) |
 
 ### Fields per Role
 
@@ -77,6 +78,7 @@ Use `directive` to replace the default instructions, or `directive_extend` to ap
 ```bash
 wb profile show                    # print resolved profile
 wb profile show --name fast        # show a named profile
+wb profile show --full             # show full directive text, including built-in defaults
 wb profile diff                    # show differences from defaults
 wb profile diff --name fast        # diff a named profile
 ```
@@ -104,7 +106,58 @@ wb run plan.md --tester-directive "Run pytest with -x flag, fail fast."
 
 Available flags: `--implementor-directive`, `--tester-directive`, `--reviewer-directive`, `--fixer-directive`.
 
-These are appended to the role's instructions and take precedence over profile values for that run.
+These replace the role's instructions for that run and take precedence over profile values.
+
+## Sub-mode Directives
+
+Some roles have sub-modes — variants used in specific execution contexts. Sub-modes inherit the parent role's agent but can have their own directive.
+
+| Sub-mode | Supported roles | When used |
+|---|---|---|
+| `tdd` | `implementor`, `tester` | `wb run --tdd` — write failing tests first, then implement |
+| `followup` | `reviewer` | Re-review after a fix (attempt > 1) |
+
+Configure sub-mode directives in YAML using the `<role>.<sub_mode>` key:
+
+```yaml
+roles:
+  tester:
+    tdd:
+      directive_extend: "Use pytest fixtures for shared setup. Prefer parametrized tests."
+  reviewer:
+    followup:
+      directive: "Focus only on whether the fix addresses the original feedback."
+  implementor:
+    tdd:
+      directive_extend: "Make only the minimal changes needed to pass the failing tests."
+```
+
+Or via `wb profile set`:
+
+```bash
+wb profile set tester.tdd.directive_extend "Use pytest fixtures for shared setup."
+wb profile set reviewer.followup.directive "Focus only on the fix."
+```
+
+Sub-mode keys are validated: `tdd` is only valid under `implementor` and `tester`; `followup` is only valid under `reviewer`. Setting them elsewhere raises an error.
+
+### Full directive map
+
+Workbench uses 9 directive variants in total:
+
+| Directive | YAML path | When used |
+|---|---|---|
+| Implementor | `implementor.directive` | Standard implement stage |
+| Tester | `tester.directive` | Standard test stage |
+| Reviewer (first pass) | `reviewer.directive` | First review of a task |
+| Reviewer follow-up | `reviewer.followup.directive` | Re-review after a fix (attempt > 1) |
+| Fixer | `fixer.directive` | After test or review failure |
+| Merger | `merger.directive` | When merging branches produces conflicts |
+| TDD Tester | `tester.tdd.directive` | `wb run --tdd` — writing failing tests first |
+| TDD Implementor | `implementor.tdd.directive` | `wb run --tdd` — making failing tests pass |
+| Planner | `planner.directive` | `wb plan <prompt>` |
+
+All 9 support both `directive` (full replace) and `directive_extend` (append to default) at their respective YAML paths. CLI flags (`--*-directive`) are limited to the four main roles (`implementor`, `tester`, `reviewer`, `fixer`) and always do a full replacement for that run.
 
 ## When to Use Profiles
 
