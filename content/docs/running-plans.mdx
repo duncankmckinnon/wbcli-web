@@ -28,12 +28,24 @@ This runs agents as subprocesses instead. Output is still captured but you can't
 
 If some tasks fail, you have several options:
 
+### Resume a session
+
+The easiest way to resume an interrupted or partially-failed session:
+
+```bash
+wb resume workbench-1
+```
+
+This looks up the session in `.workbench/status-*.yaml`, finds the original plan, and re-runs every task that isn't `done + merged` — including tasks that failed and tasks that never started. For finer control (wave ranges, directive overrides, selective tasks), use `wb run` directly:
+
+```bash
+# Manual form — same as wb resume, but lets you override flags
+wb run plan.md -b workbench-1 --only-incomplete
+```
+
 ### Retry failed tasks
 
 ```bash
-# Re-run only tasks that failed in a previous session
-wb run plan.md -b workbench-1 --only-failed
-
 # Auto-retry tasks that crashed (not those that exhausted fix retries)
 wb run plan.md --retry-failed
 
@@ -46,7 +58,7 @@ wb run plan.md --retry-failed --fail-fast
 
 `--retry-failed` distinguishes between transient failures (agent crash, timeout) and deliberate failures (exhausted all fix cycles). Only transient failures are retried.
 
-`--only-failed` reads `.workbench/status.json` to determine which tasks already completed. It requires `-b` to specify the session branch to resume.
+`--only-incomplete` reads the plan's status file to determine which tasks already completed. It requires `-b` to specify the session branch to resume.
 
 ### Re-run specific tasks
 

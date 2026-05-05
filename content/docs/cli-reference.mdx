@@ -10,6 +10,7 @@ parent: getting-started
 | Command | Description |
 |---|---|
 | `wb run <plan>` | Execute a plan with parallel agents |
+| `wb resume <session>` | Resume a session, re-running every task that isn't done + merged |
 | `wb plan <prompt>` | Generate a workbench plan from a prompt or existing document using a planner agent |
 | `wb merge -b <branch>` | Merge completed-but-unmerged task branches (auto-detects plan) |
 | `wb preview <plan>` | Dry-run: show parsed tasks and waves |
@@ -55,7 +56,7 @@ wb run <plan.md> [options]
 | `--end-wave N` | Stop after wave N (default: last wave) |
 | `--retry-failed` | Auto-retry tasks that crashed (not those that exhausted fix retries) |
 | `--fail-fast` | Stop after the first wave with any failed tasks |
-| `--only-failed` | Skip completed tasks from a prior run (requires `-b`) |
+| `--only-incomplete` | Skip completed tasks from a prior run (requires `-b`) |
 | `--task ID` | Run only specific tasks by ID or slug (repeatable) |
 | `--cleanup` | Remove worktrees after completion |
 | `--keep-branches` | Keep task branches after merging (default: auto-delete on success) |
@@ -97,16 +98,53 @@ Run a range of waves:
 wb run plan.md -b workbench-1 --start-wave 2 --end-wave 4
 ```
 
-Retry only the tasks that failed in a previous run:
+Resume a session, re-running every incomplete task:
 
 ```bash
-wb run plan.md -b workbench-1 --only-failed
+wb resume workbench-1
+```
+
+Retry only incomplete tasks manually (use this if you need to override flags):
+
+```bash
+wb run plan.md -b workbench-1 --only-incomplete
 ```
 
 Add custom reviewer instructions:
 
 ```bash
 wb run plan.md --reviewer-directive "Focus on error handling and edge cases"
+```
+
+## wb resume
+
+Sugar over `wb run <plan> -b <session> --only-incomplete`. Looks up the session in `.workbench/status-*.yaml`, finds the original plan via the recorded `plan_source`, and re-runs every task that isn't `done + merged`.
+
+```bash
+wb resume <session-branch> [options]
+```
+
+This includes tasks that failed AND tasks that never started (e.g., a crash before the wave reached them). For finer-grained control — wave ranges, directive overrides, selective tasks — use `wb run` directly.
+
+### Flags
+
+| Flag | Description |
+|---|---|
+| `--no-tmux` | Run agents as subprocesses instead of tmux |
+| `--agent CMD` | Agent CLI command (default: `claude`) |
+| `-j N` | Max parallel tasks per wave (default: 4) |
+| `--max-retries N` | Max fix attempts after a failed test or review (default: 2) |
+| `--tdd` | Run pending tasks in TDD mode |
+| `--profile PATH` | Use a specific profile.yaml |
+| `--name NAME` | Named profile to resolve |
+| `--repo PATH` | Repository path (auto-detected if omitted) |
+
+### Examples
+
+```bash
+wb resume workbench-1
+wb resume workbench-1 --tdd       # if the original session was TDD
+wb resume workbench-1 --no-tmux
 ```
 
 ## wb plan
