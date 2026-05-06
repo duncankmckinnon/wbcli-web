@@ -66,6 +66,32 @@ wb run <plan.md> [options]
 | `--profile-name NAME` | Use a named profile (`profile.<name>.yaml`) |
 | `--*-directive TEXT` | Override instructions for a specific agent role |
 
+### Frontmatter-readable flags
+
+Plans may declare these keys in a YAML frontmatter block (`---` delimiters) at the top of the file. Frontmatter values act as defaults; explicit CLI flags always win. Unknown keys raise an error.
+
+| Key | CLI flag | Type |
+|---|---|---|
+| `session_branch` | `-b` / `--session-branch` | string |
+| `name` | `--name` | string |
+| `base` | `--base` | string |
+| `local` | `--local` | bool |
+| `agent` | `--agent` | string |
+| `profile` | `--profile` | string (path) |
+| `profile_name` | `--profile-name` | string |
+| `max_concurrent` | `-j` / `--max-concurrent` | int (>= 1) |
+| `max_retries` | `--max-retries` | int (>= 0) |
+| `tdd` | `--tdd` | bool |
+| `skip_test` | `--skip-test` | bool |
+| `skip_review` | `--skip-review` | bool |
+| `retry_failed` | `--retry-failed` | bool |
+| `fail_fast` | `--fail-fast` | bool |
+| `cleanup` | `--cleanup` | bool |
+| `keep_branches` | `--keep-branches` | bool |
+| `push` | `--push` | bool |
+
+See [Plan Frontmatter](/docs/plan-format#plan-frontmatter-run-config) for the full format and examples.
+
 ### Examples
 
 Run a plan with default settings:
