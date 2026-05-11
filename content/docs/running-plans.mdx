@@ -143,6 +143,53 @@ Session branches are created without upstream tracking by default. Use `--push` 
 | `--base <branch> --local` | `workbench-N` | `<branch>` | local `<branch>` | Branch from a local feature branch |
 | `-b my-session` | `my-session` | *(existing)* | *(existing)* | Resume a previous session |
 
+## Final Review and PR Creation
+
+After a session's branches are merged, you can run a whole-branch review that reads the plan, extracts requirements, and evaluates the session branch against them. On `VERDICT: PASS`, workbench opens a GitHub PR automatically.
+
+### Trigger from `wb run`
+
+```bash
+wb run plan.md --final-review
+wb run plan.md --final-review --push       # push branch and open PR on PASS
+wb run plan.md --final-review --skip-pr    # run review but never open a PR
+```
+
+### Trigger from `wb merge`
+
+```bash
+wb merge -b workbench-1 --review
+wb merge -b workbench-1 --review --pr-title "Add JWT auth"
+```
+
+### Run standalone
+
+```bash
+wb final-review workbench-1               # run review for a completed session
+wb review workbench-1                     # alias
+wb final-review workbench-1 --skip-pr     # review without opening a PR
+```
+
+### How it works
+
+Two agents run in sequence:
+
+1. **Summarizer** — reads the plan and extracts a structured requirements digest (`requirements.md`).
+2. **Branch reviewer** — diffs the session branch against the base and evaluates coverage against the digest, writing `report.md`.
+
+Artifacts are saved to `.workbench/<plan-id>/reviews/<session>/`. `wb status` shows the latest verdict per session and the PR URL (or report path on fail).
+
+### PR override options
+
+| Flag | Description |
+|---|---|
+| `--pr-title TEXT` | Override the PR title (default: plan H1, then plan id) |
+| `--pr-body-file PATH` | Use this file's content as the PR body |
+| `--pr-base BRANCH` | Override the PR base branch (default: session's recorded base) |
+| `--skip-pr` | Skip PR creation even on PASS verdict |
+
+`gh` must be installed and authenticated for PR creation. If it isn't available, the review still runs and a copy-pasteable `gh pr create` command is printed instead.
+
 ## Cleanup
 
 Workbench creates isolated git worktrees for each task. These are usually cleaned up automatically, but if any remain:
