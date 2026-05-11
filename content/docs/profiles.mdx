@@ -64,6 +64,8 @@ Use `directive` to replace the default instructions, or `directive_extend` to ap
 | `fixer` | Addresses feedback from failed tests or reviews |
 | `merger` | Resolves merge conflicts between parallel branches |
 | `planner` | Generates workbench plans (`wb plan`) |
+| `summarizer` | Extracts a requirements digest from the plan during final review |
+| `branch_reviewer` | Reviews the whole session branch diff against the requirements digest |
 
 ### Fields per Role
 
@@ -104,7 +106,7 @@ wb run plan.md --reviewer-directive "Focus only on security issues."
 wb run plan.md --tester-directive "Run pytest with -x flag, fail fast."
 ```
 
-Available flags: `--implementor-directive`, `--tester-directive`, `--reviewer-directive`, `--fixer-directive`.
+Available flags: `--implementor-directive`, `--tester-directive`, `--reviewer-directive`, `--fixer-directive`, `--summarizer-directive`, `--branch-reviewer-directive`.
 
 These replace the role's instructions for that run and take precedence over profile values.
 
@@ -143,7 +145,7 @@ Sub-mode keys are validated: `tdd` is only valid under `implementor` and `tester
 
 ### Full directive map
 
-Workbench uses 9 directive variants in total:
+Workbench uses 11 directive variants in total:
 
 | Directive | YAML path | When used |
 |---|---|---|
@@ -156,8 +158,10 @@ Workbench uses 9 directive variants in total:
 | TDD Tester | `tester.tdd.directive` | `wb run --tdd` — writing failing tests first |
 | TDD Implementor | `implementor.tdd.directive` | `wb run --tdd` — making failing tests pass |
 | Planner | `planner.directive` | `wb plan <prompt>` |
+| Summarizer | `summarizer.directive` | `wb final-review` — extracts requirements digest from plan |
+| Branch Reviewer | `branch_reviewer.directive` | `wb final-review` — reviews session branch against requirements |
 
-All 9 support both `directive` (full replace) and `directive_extend` (append to default) at their respective YAML paths. CLI flags (`--*-directive`) are limited to the four main roles (`implementor`, `tester`, `reviewer`, `fixer`) and always do a full replacement for that run.
+All 11 support both `directive` (full replace) and `directive_extend` (append to default) at their respective YAML paths. CLI flags (`--*-directive`) are available for the main task-pipeline roles (`implementor`, `tester`, `reviewer`, `fixer`) and the final-review roles (`summarizer`, `branch_reviewer`); they always do a full replacement for that run.
 
 ## When to Use Profiles
 

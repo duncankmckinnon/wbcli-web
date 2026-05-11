@@ -13,9 +13,10 @@ parent: getting-started
 | `wb resume <session>` | Resume a session, re-running every task that isn't done + merged |
 | `wb plan <prompt>` | Generate a workbench plan from a prompt or existing document using a planner agent |
 | `wb merge -b <branch>` | Merge completed-but-unmerged task branches (auto-detects plan) |
+| `wb final-review <branch>` / `wb review <branch>` | Run a whole-branch review (requirements summarizer + branch reviewer) and optionally open a PR |
 | `wb preview <plan>` | Dry-run: show parsed tasks and waves |
 | `wb setup` | Create `.workbench/`, install skills, and optionally create a profile |
-| `wb status` | Show active worktrees |
+| `wb status` | Show active worktrees and final review status |
 | `wb stop` | Kill all running agent tmux sessions |
 | `wb clean` | Remove all workbench worktrees and `wb/` branches |
 | `wb agents init` | Create agents.yaml with built-in adapter configs |
@@ -61,6 +62,13 @@ wb run <plan.md> [options]
 | `--cleanup` | Remove worktrees after completion |
 | `--keep-branches` | Keep task branches after merging (default: auto-delete on success) |
 | `--push` | Push the session branch to origin after merging (sets upstream tracking) |
+| `--final-review` | Run a whole-branch review after merges complete; opens a PR on PASS |
+| `--pr-title TEXT` | Override the PR title (default: plan H1, then plan id) |
+| `--pr-body-file PATH` | Use this file's content as the PR body |
+| `--pr-base BRANCH` | Override the PR base branch (default: session's recorded base) |
+| `--skip-pr` | Skip PR creation even on PASS verdict |
+| `--summarizer-directive TEXT` | Override the requirements summarizer agent's instructions |
+| `--branch-reviewer-directive TEXT` | Override the branch reviewer agent's instructions |
 | `--repo PATH` | Repository path (auto-detected if omitted) |
 | `--profile PATH` | Use a specific profile.yaml |
 | `--profile-name NAME` | Use a named profile (`profile.<name>.yaml`) |
@@ -89,6 +97,7 @@ Plans may declare these keys in a YAML frontmatter block (`---` delimiters) at t
 | `cleanup` | `--cleanup` | bool |
 | `keep_branches` | `--keep-branches` | bool |
 | `push` | `--push` | bool |
+| `final_review` | `--final-review` | bool |
 
 See [Plan Frontmatter](/docs/plan-format#plan-frontmatter-run-config) for the full format and examples.
 
@@ -239,7 +248,52 @@ wb merge -b <session-branch> [options]
 | `--no-tmux` | Run resolver agents as subprocesses instead of tmux |
 | `--keep-branches` | Keep task branches after merging |
 | `--push` | Push the session branch to origin after merging (sets upstream tracking) |
+| `--review` | After merging, run a whole-branch review (and open a PR on PASS) |
+| `--pr-title TEXT` | Override the PR title |
+| `--pr-body-file PATH` | Use this file's content as the PR body |
+| `--pr-base BRANCH` | Override the PR base branch |
+| `--skip-pr` | Skip PR creation even on PASS verdict |
+| `--summarizer-directive TEXT` | Override the requirements summarizer agent's instructions |
+| `--branch-reviewer-directive TEXT` | Override the branch reviewer agent's instructions |
 | `--repo PATH` | Repository path (auto-detected if omitted) |
+
+## wb final-review
+
+Alias: `wb review`. Run a whole-branch review for a completed session. Two agents run in sequence: a **requirements summarizer** extracts a structured digest from the plan, then a **branch reviewer** evaluates the session-branch diff against that digest and writes a markdown report.
+
+On `VERDICT: PASS`, workbench opens a GitHub PR via `gh pr create`. On `VERDICT: FAIL`, no PR is created — the report lists findings with file/line evidence and suggested fixes.
+
+Artifacts land under `.workbench/<plan-id>/reviews/<session>/`:
+- `requirements.md` — the requirements digest
+- `report.md` — the review report
+
+Each run appends an entry to the session's `final_reviews` list in `.workbench/<plan-id>/status.yaml`. `wb status` surfaces the latest verdict and PR URL (or report path on fail).
+
+```bash
+wb final-review workbench-1                       # default: open PR on PASS
+wb final-review workbench-1 --skip-pr             # never open a PR
+wb final-review workbench-1 --pr-title "My feat"  # override PR metadata
+```
+
+`gh` must be installed and authenticated for PR creation. When it isn't, the review still runs; the PR step prints a copy-pasteable `gh pr create` command instead of failing.
+
+### Flags
+
+| Flag | Description |
+|---|---|
+| `--agent CMD` | Agent CLI command (default: `claude`) |
+| `--no-tmux` | Run agents as subprocesses instead of tmux |
+| `--pr-title TEXT` | Override the PR title (default: plan H1, else plan id) |
+| `--pr-body-file PATH` | Use this file's content as the PR body |
+| `--pr-base BRANCH` | Override the PR base branch (default: session's recorded base) |
+| `--skip-pr` | Skip PR creation even on PASS verdict |
+| `--summarizer-directive TEXT` | Override the requirements summarizer agent's instructions |
+| `--branch-reviewer-directive TEXT` | Override the branch reviewer agent's instructions |
+| `--profile PATH` | Use a specific profile.yaml |
+| `--profile-name NAME` | Use a named profile |
+| `--repo PATH` | Repository path (auto-detected if omitted) |
+
+The `summarizer` and `branch_reviewer` roles are configurable in `profile.yaml` like any other role (`agent`, `directive`). See [Profiles](/docs/profiles).
 
 ## wb preview
 
