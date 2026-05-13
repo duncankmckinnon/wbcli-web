@@ -92,10 +92,13 @@ Profiles merge in order of specificity. Later sources override earlier ones:
 1. Built-in defaults
 2. `~/.workbench/profile.yaml` (global)
 3. `.workbench/profile.yaml` (project)
-4. `--profile` flag (explicit path)
-5. CLI flags (`--*-directive`)
+4. `.workbench/<plan>/profile.yaml` (per-plan)
+5. `--profile` flag (explicit path)
+6. CLI flags (`--*-directive`)
 
 Named profiles (`--profile-name`) replace the default filename at each level.
+
+The per-plan layer (step 4) lets you freeze a plan's agent configuration independently of the project-level config. Use `wb plan copy-settings <name>` or the `--copy-settings` flag on `wb plan` to populate it from the current effective config. Agents are resolved the same way — `.workbench/<plan>/agents.yaml` takes precedence over `.workbench/agents.yaml`.
 
 ## Directive Overrides
 

@@ -14,6 +14,7 @@ parent: getting-started
 | `wb plan <prompt>` | Generate a workbench plan from a prompt or existing document using a planner agent |
 | `wb merge -b <branch>` | Merge completed-but-unmerged task branches (auto-detects plan) |
 | `wb final-review <branch>` / `wb review <branch>` | Run a whole-branch review (requirements summarizer + branch reviewer) and optionally open a PR |
+| `wb pull-request <plan>` | Open a GitHub PR for a session with an AI-written description |
 | `wb preview <plan>` | Dry-run: show parsed tasks and waves |
 | `wb setup` | Create `.workbench/`, install skills, and optionally create a profile |
 | `wb status` | Show active worktrees and final review status |
@@ -67,6 +68,7 @@ wb run <plan.md> [options]
 | `--pr-body-file PATH` | Use this file's content as the PR body |
 | `--pr-base BRANCH` | Override the PR base branch (default: session's recorded base) |
 | `--skip-pr` | Skip PR creation even on PASS verdict |
+| `--pr-writer-directive TEXT` | Override the PR writer agent's instructions |
 | `--summarizer-directive TEXT` | Override the requirements summarizer agent's instructions |
 | `--branch-reviewer-directive TEXT` | Override the branch reviewer agent's instructions |
 | `--repo PATH` | Repository path (auto-detected if omitted) |
@@ -197,10 +199,23 @@ At least one of a prompt or `--from` is required.
 | Flag | Description |
 |---|---|
 | `--from FILE` | Transform an existing document (spec, draft, or rough plan) into workbench format |
-| `-n NAME` / `--name NAME` | Plan file name, written to `.workbench/plans/<name>.md` (default: `plan`) |
+| `-n NAME` / `--name NAME` | Plan file name, written to `.workbench/<name>/plan.md` (default: `plan`) |
+| `--copy-settings` | Copy the current effective `profile.yaml` and `agents.yaml` into the plan folder |
 | `--agent CMD` | Agent CLI to run the planner (default: `claude`) |
 | `--no-tmux` | Run the planner as a subprocess instead of in tmux |
 | `--repo PATH` | Repository path (auto-detected if omitted) |
+
+### Subcommands
+
+#### wb plan copy-settings
+
+Copy the current effective `profile.yaml` and `agents.yaml` into an existing plan folder, with a date-stamped header. Use this to freeze a plan's agent configuration at a point in time so it doesn't change when the project-level config evolves.
+
+```bash
+wb plan copy-settings <name>
+```
+
+This writes `.workbench/<name>/profile.yaml` and `.workbench/<name>/agents.yaml` from the current resolved config. You can also pass `--copy-settings` to `wb plan` to do this in the same step as generating the plan.
 
 ### Examples
 
@@ -222,12 +237,21 @@ Combine a prompt with an existing document as seed material:
 wb plan "Focus on security and edge cases" --from existing-spec.md --name secure-auth
 ```
 
+Generate a plan and freeze the current agent config into the plan folder:
+
+```bash
+wb plan "Add JWT auth" --name auth --copy-settings
+```
+
 After a plan is written, the CLI prints the path and suggested next commands:
 
 ```bash
-cat .workbench/plans/plan.md      # review the generated plan
-wb preview .workbench/plans/plan.md
-wb run .workbench/plans/plan.md
+cat .workbench/plan/plan.md      # review the generated plan
+wb preview .workbench/plan/plan.md
+wb run .workbench/plan/plan.md
+# Or use the plan name directly (resolves to .workbench/<name>/plan.md)
+wb preview plan
+wb run plan
 ```
 
 ## wb merge
@@ -253,6 +277,7 @@ wb merge -b <session-branch> [options]
 | `--pr-body-file PATH` | Use this file's content as the PR body |
 | `--pr-base BRANCH` | Override the PR base branch |
 | `--skip-pr` | Skip PR creation even on PASS verdict |
+| `--pr-writer-directive TEXT` | Override the PR writer agent's instructions |
 | `--summarizer-directive TEXT` | Override the requirements summarizer agent's instructions |
 | `--branch-reviewer-directive TEXT` | Override the branch reviewer agent's instructions |
 | `--repo PATH` | Repository path (auto-detected if omitted) |
@@ -287,6 +312,7 @@ wb final-review workbench-1 --pr-title "My feat"  # override PR metadata
 | `--pr-body-file PATH` | Use this file's content as the PR body |
 | `--pr-base BRANCH` | Override the PR base branch (default: session's recorded base) |
 | `--skip-pr` | Skip PR creation even on PASS verdict |
+| `--pr-writer-directive TEXT` | Override the PR writer agent's instructions |
 | `--summarizer-directive TEXT` | Override the requirements summarizer agent's instructions |
 | `--branch-reviewer-directive TEXT` | Override the branch reviewer agent's instructions |
 | `--profile PATH` | Use a specific profile.yaml |
@@ -294,6 +320,44 @@ wb final-review workbench-1 --pr-title "My feat"  # override PR metadata
 | `--repo PATH` | Repository path (auto-detected if omitted) |
 
 The `summarizer` and `branch_reviewer` roles are configurable in `profile.yaml` like any other role (`agent`, `directive`). See [Profiles](/docs/profiles).
+
+## wb pull-request
+
+Open a GitHub PR for a session, with an AI-written title and description. The PR writer agent reads the plan context, git diff stat, commit log, and merged task titles to author a relevant PR body. Falls back to a plan-derived body if the agent fails.
+
+Unlike `wb final-review`, this command skips the requirements review and goes straight to PR creation. Use it after a session is complete and already merged, when you don't need the branch review step.
+
+```bash
+wb pull-request <plan> [options]
+```
+
+`<plan>` can be a plan name (e.g. `myfeature`, resolved to `.workbench/myfeature/plan.md`) or a path to a `plan.md` file. If the plan has multiple sessions, specify which one with `-b`.
+
+`gh` must be installed and authenticated for PR creation.
+
+### Flags
+
+| Flag | Description |
+|---|---|
+| `-b NAME` / `--session-branch` | Session branch (required if the plan has multiple sessions) |
+| `--agent CMD` | Agent CLI command (default: `claude`) |
+| `--no-tmux` | Run the PR writer agent as a subprocess instead of tmux |
+| `--pr-title TEXT` | Override the agent-generated title |
+| `--pr-body-file PATH` | Skip the PR writer and use this file's content as the body |
+| `--pr-base BRANCH` | Override the PR base branch (default: session's recorded base) |
+| `--pr-writer-directive TEXT` | Override the PR writer agent's instructions |
+| `--profile PATH` | Use a specific profile.yaml |
+| `--profile-name NAME` | Use a named profile |
+| `--repo PATH` | Repository path (auto-detected if omitted) |
+
+### Examples
+
+```bash
+wb pull-request myfeature
+wb pull-request myfeature -b workbench-3      # when plan has multiple sessions
+wb pull-request myfeature --pr-title "Add JWT auth"
+wb pull-request myfeature --pr-body-file pr-body.md   # skip PR writer, use file
+```
 
 ## wb preview
 
