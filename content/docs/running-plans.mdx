@@ -177,6 +177,8 @@ Two agents run in sequence:
 1. **Summarizer** — reads the plan and extracts a structured requirements digest (`requirements.md`).
 2. **Branch reviewer** — diffs the session branch against the base and evaluates coverage against the digest, writing `report.md`.
 
+On `VERDICT: PASS`, a **PR writer** agent authors the PR title and body from the actual diff, commit log, and plan context. Supply `--pr-body-file` to skip the PR writer and use a static body instead.
+
 Artifacts are saved to `.workbench/<plan-id>/reviews/<session>/`. `wb status` shows the latest verdict per session and the PR URL (or report path on fail).
 
 ### PR override options
@@ -184,11 +186,23 @@ Artifacts are saved to `.workbench/<plan-id>/reviews/<session>/`. `wb status` sh
 | Flag | Description |
 |---|---|
 | `--pr-title TEXT` | Override the PR title (default: plan H1, then plan id) |
-| `--pr-body-file PATH` | Use this file's content as the PR body |
+| `--pr-body-file PATH` | Use this file's content as the PR body (skips PR writer agent) |
 | `--pr-base BRANCH` | Override the PR base branch (default: session's recorded base) |
 | `--skip-pr` | Skip PR creation even on PASS verdict |
+| `--pr-writer-directive TEXT` | Override the PR writer agent's instructions |
 
 `gh` must be installed and authenticated for PR creation. If it isn't available, the review still runs and a copy-pasteable `gh pr create` command is printed instead.
+
+### Open a PR without running a review
+
+Use `wb pull-request` to create a PR directly for a completed session, without running the requirements review. The PR writer agent still authors the title and body from the diff:
+
+```bash
+wb pull-request myfeature
+wb pull-request myfeature -b workbench-3    # if plan has multiple sessions
+```
+
+This is useful when the session branch is already reviewed and merged, or when you want to open a draft PR before running a formal review.
 
 ## Cleanup
 
