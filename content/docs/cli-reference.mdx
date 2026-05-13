@@ -153,7 +153,7 @@ wb run plan.md --reviewer-directive "Focus on error handling and edge cases"
 
 ## wb resume
 
-Sugar over `wb run <plan> -b <session> --only-incomplete`. Looks up the session in `.workbench/status-*.yaml`, finds the original plan via the recorded `plan_source`, and re-runs every task that isn't `done + merged`. Frontmatter is read from the plan referenced by the session's `plan_source`; CLI flags override frontmatter, same as `wb run`.
+Sugar over `wb run <plan> -b <session> --only-incomplete`. Looks up the session in `.workbench/<plan>/status.yaml` (legacy `.workbench/status-*.yaml` is still read), finds the original plan via the recorded `plan_source`, and re-runs every task that isn't `done + merged`. Frontmatter is read from the plan referenced by the session's `plan_source`; CLI flags override frontmatter, same as `wb run`.
 
 ```bash
 wb resume <session-branch> [options]
