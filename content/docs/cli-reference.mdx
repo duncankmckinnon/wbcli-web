@@ -428,12 +428,28 @@ wb clean [options]
 
 Manage agent adapters — built-in and custom CLI integrations.
 
+### Group options
+
+| Flag | Description |
+|---|---|
+| `--plan NAME` | Scope all subcommands to `.workbench/<name>/agents.yaml` instead of the project-level file |
+
+Pass `--plan` immediately after `wb agents` and before the subcommand:
+
+```bash
+wb agents --plan myfeature list
+wb agents --plan myfeature add my-agent --command my-cli
+```
+
+When `--plan` is omitted, subcommands read and write `.workbench/agents.yaml` (the project-level file).
+
 ### wb agents init
 
-Create `.workbench/agents.yaml` pre-populated with configs for all built-in adapters (Claude, Gemini, Codex, Cursor, Copilot). Use as a starting point for customization.
+Create `agents.yaml` pre-populated with configs for all built-in adapters (Claude, Gemini, Codex, Cursor, Copilot). Use as a starting point for customization.
 
 ```bash
 wb agents init [--repo PATH]
+wb agents --plan <name> init   # create plan-scoped agents.yaml
 ```
 
 ### wb agents list
@@ -442,6 +458,7 @@ List all available agents (built-in and custom):
 
 ```bash
 wb agents list [--repo PATH]
+wb agents --plan <name> list   # show plan-scoped agents
 ```
 
 ### wb agents show
@@ -450,6 +467,7 @@ Show the full configuration for a specific agent:
 
 ```bash
 wb agents show <name> [--repo PATH]
+wb agents --plan <plan> show <name>
 ```
 
 ### wb agents add
@@ -458,6 +476,7 @@ Add or update a custom agent adapter:
 
 ```bash
 wb agents add <name> [options]
+wb agents --plan <plan> add <name> [options]   # write to plan-scoped agents.yaml
 ```
 
 | Flag | Description |
@@ -475,6 +494,7 @@ Remove a custom agent adapter:
 
 ```bash
 wb agents remove <name> [--repo PATH]
+wb agents --plan <plan> remove <name>
 ```
 
 ## wb profile

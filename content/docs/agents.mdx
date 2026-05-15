@@ -63,6 +63,19 @@ wb agents remove my-agent         # remove a custom agent
 
 `wb agents init` creates `.workbench/agents.yaml` pre-populated with the configs for all built-in adapters (Claude, Gemini, Codex, Cursor, Copilot). Use this as a starting point to customize command flags, output parsing, or to add your own agents.
 
+### Plan-scoped agents
+
+Each plan can have its own `agents.yaml` at `.workbench/<plan>/agents.yaml`. Pass `--plan <name>` immediately after `wb agents` to route all subcommands to that file instead of the project-level one:
+
+```bash
+wb agents --plan myfeature init          # create plan-scoped agents.yaml
+wb agents --plan myfeature list          # list agents from plan's agents.yaml
+wb agents --plan myfeature add my-agent --command my-cli
+wb agents --plan myfeature remove my-agent
+```
+
+When `wb run` executes a plan, it resolves agents from `.workbench/<plan>/agents.yaml` first, falling back to the project-level `.workbench/agents.yaml`. Use `wb plan copy-settings <name>` to seed a plan's `agents.yaml` from the current project config as a starting point.
+
 For example, the built-in Copilot adapter config looks like:
 
 ```yaml
