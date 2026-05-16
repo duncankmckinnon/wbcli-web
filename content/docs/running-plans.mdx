@@ -58,6 +58,8 @@ wb run plan.md --retry-failed --fail-fast
 
 `--retry-failed` distinguishes between transient failures (agent crash, timeout) and deliberate failures (exhausted all fix cycles). Only transient failures are retried.
 
+When retrying, workbench resumes each task from its last successfully completed pipeline stage rather than starting the full pipeline over. For example, if a task finished `implement` and `test` but crashed during `review`, the retry picks up at `review` — skipping the stages already done. This uses the existing worktree and branch from the prior run. Workbench falls back to a clean start if the worktree no longer exists (e.g., after `wb clean`) or if TDD mode is active.
+
 `--only-incomplete` reads the plan's status file to determine which tasks already completed. It requires `-b` to specify the session branch to resume.
 
 ### Re-run specific tasks
