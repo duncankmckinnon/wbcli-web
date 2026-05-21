@@ -104,48 +104,42 @@ export function CodeExample() {
               </div>
 
               <div className="mt-4">
-                <div className="text-cyan-400 font-bold">—— Wave 1/2 (1 task) ——</div>
-                <table className="w-full mt-2 text-left">
+                <div className="text-brand-accent-primary text-center mb-1">Workbench</div>
+                <table className="w-full text-left whitespace-nowrap">
                   <thead>
-                    <tr className="border-b border-brand-bg-tertiary">
-                      <th className="py-1 pr-3 text-brand-text-secondary font-normal">Task</th>
-                      <th className="py-1 pr-3 text-brand-text-secondary font-normal">Status</th>
-                      <th className="py-1 text-brand-text-secondary font-normal">Pipeline</th>
+                    <tr className="border-b border-brand-bg-tertiary text-brand-text-secondary">
+                      <th className="py-1 pr-3 font-normal">Task</th>
+                      <th className="py-1 pr-3 font-normal text-center">Wave</th>
+                      <th className="py-1 pr-3 font-normal">Status</th>
+                      <th className="py-1 pr-3 font-normal">Branch</th>
+                      <th className="py-1 pr-3 font-normal">Time</th>
+                      <th className="py-1 pr-3 font-normal">Pipeline</th>
+                      <th className="py-1 font-normal text-center">Merged</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
+                    <tr className="border-b border-brand-bg-tertiary/50">
                       <td className="py-1 pr-3 text-brand-text-primary">User model</td>
+                      <td className="py-1 pr-3 text-brand-text-muted text-center">1</td>
                       <td className="py-1 pr-3 text-green-400">done</td>
-                      <td className="py-1 text-brand-text-muted">test:write → impl:ok → test:pass → review:pass</td>
+                      <td className="py-1 pr-3 text-brand-text-muted">wb/user-model</td>
+                      <td className="py-1 pr-3 text-brand-text-muted">2m05s</td>
+                      <td className="py-1 pr-3 text-brand-text-muted">impl:ok → test:pass → review:pass</td>
+                      <td className="py-1 text-green-400 text-center">✓</td>
                     </tr>
-                  </tbody>
-                </table>
-                <div className="mt-2 text-brand-text-muted">
-                  {"  "}✓ Merged 1 branch cleanly.
-                </div>
-              </div>
-
-              <div className="mt-4">
-                <div className="text-cyan-400 font-bold">—— Wave 2/2 (1 task) ——</div>
-                <table className="w-full mt-2 text-left">
-                  <thead>
-                    <tr className="border-b border-brand-bg-tertiary">
-                      <th className="py-1 pr-3 text-brand-text-secondary font-normal">Task</th>
-                      <th className="py-1 pr-3 text-brand-text-secondary font-normal">Status</th>
-                      <th className="py-1 text-brand-text-secondary font-normal">Pipeline</th>
-                    </tr>
-                  </thead>
-                  <tbody>
                     <tr>
                       <td className="py-1 pr-3 text-brand-text-primary">Auth endpoints</td>
+                      <td className="py-1 pr-3 text-brand-text-muted text-center">2</td>
                       <td className="py-1 pr-3 text-green-400">done</td>
-                      <td className="py-1 text-brand-text-muted">test:write → impl:ok → test:pass → review:pass</td>
+                      <td className="py-1 pr-3 text-brand-text-muted">wb/auth-endpoints</td>
+                      <td className="py-1 pr-3 text-brand-text-muted">4m18s</td>
+                      <td className="py-1 pr-3 text-brand-text-muted">impl:ok → test:fail → fix → test:pass → review:pass</td>
+                      <td className="py-1 text-green-400 text-center">✓</td>
                     </tr>
                   </tbody>
                 </table>
                 <div className="mt-2 text-brand-text-muted">
-                  {"  "}✓ Merged 1 branch cleanly.
+                  {"  "}✓ Merged 2 branches into workbench-1.
                 </div>
               </div>
 

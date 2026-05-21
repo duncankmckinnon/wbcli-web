@@ -101,78 +101,79 @@ export function Hero() {
           <div className="p-6 font-mono text-xs sm:text-sm leading-relaxed overflow-x-auto">
             {/* Command */}
             <div className="text-brand-text-primary">
-              <span className="text-brand-text-muted">$</span> wb run plan.md
+              <span className="text-brand-text-muted">$</span> wb run my-feature
             </div>
 
             {/* Plan info */}
             <div className="mt-4 space-y-0.5 text-brand-text-secondary">
+              <div>Plan: <span className="text-brand-text-primary">My Feature</span></div>
               <div>Tasks: <span className="text-brand-text-primary">4</span> across <span className="text-brand-text-primary">2</span> wave(s)</div>
-              <div>Concurrency: <span className="text-brand-text-primary">4</span></div>
+              <div>Concurrency: <span className="text-brand-text-primary">4</span> · Max retries: <span className="text-brand-text-primary">2</span></div>
+              <div>Session branch: <span className="text-brand-text-primary">workbench-1</span></div>
             </div>
 
-            {/* Wave 1 */}
+            {/* Run table */}
             <div className="mt-5">
-              <div className="text-cyan-400 font-bold">—— Wave 1/2 (3 tasks) ——</div>
-              <div className="mt-3">
-                <div className="text-brand-accent-primary text-center mb-1">Workbench</div>
-                <table className="w-full border-collapse text-left">
-                  <thead>
-                    <tr className="border-b border-brand-bg-tertiary">
-                      <th className="py-1 pr-4 text-brand-text-secondary font-normal">Task</th>
-                      <th className="py-1 pr-4 text-brand-text-secondary font-normal">Status</th>
-                      <th className="py-1 pr-4 text-brand-text-secondary font-normal">Time</th>
-                      <th className="py-1 text-brand-text-secondary font-normal">Pipeline</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr className="border-b border-brand-bg-tertiary/50">
-                      <td className="py-1 pr-4 text-brand-text-primary">Task 1</td>
-                      <td className="py-1 pr-4 text-green-400">done</td>
-                      <td className="py-1 pr-4 text-brand-text-muted">3m42s</td>
-                      <td className="py-1 text-brand-text-muted">impl:ok → test:pass → review:pass</td>
-                    </tr>
-                    <tr className="border-b border-brand-bg-tertiary/50">
-                      <td className="py-1 pr-4 text-brand-text-primary">Task 2</td>
-                      <td className="py-1 pr-4 text-green-400">done</td>
-                      <td className="py-1 pr-4 text-brand-text-muted">4m18s</td>
-                      <td className="py-1 text-brand-text-muted">impl:ok → test:fail → fix → test:pass → review:pass</td>
-                    </tr>
-                    <tr>
-                      <td className="py-1 pr-4 text-brand-text-primary">Task 3</td>
-                      <td className="py-1 pr-4 text-green-400">done</td>
-                      <td className="py-1 pr-4 text-brand-text-muted">2m05s</td>
-                      <td className="py-1 text-brand-text-muted">impl:ok → test:pass → review:pass</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <div className="mt-3 text-brand-text-muted">
-                {"  "}✓ Merged 3 branches cleanly.
-              </div>
+              <div className="text-brand-accent-primary text-center mb-1">Workbench</div>
+              <table className="w-full border-collapse text-left whitespace-nowrap">
+                <thead>
+                  <tr className="border-b border-brand-bg-tertiary text-brand-text-secondary">
+                    <th className="py-1 pr-4 font-normal">Task</th>
+                    <th className="py-1 pr-4 font-normal text-center">Wave</th>
+                    <th className="py-1 pr-4 font-normal">Status</th>
+                    <th className="py-1 pr-4 font-normal">Branch</th>
+                    <th className="py-1 pr-4 font-normal">Time</th>
+                    <th className="py-1 pr-4 font-normal">Pipeline</th>
+                    <th className="py-1 font-normal text-center">Merged</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b border-brand-bg-tertiary/50">
+                    <td className="py-1 pr-4 text-brand-text-primary">User model</td>
+                    <td className="py-1 pr-4 text-brand-text-muted text-center">1</td>
+                    <td className="py-1 pr-4 text-green-400">done</td>
+                    <td className="py-1 pr-4 text-brand-text-muted">wb/user-model</td>
+                    <td className="py-1 pr-4 text-brand-text-muted">3m42s</td>
+                    <td className="py-1 pr-4 text-brand-text-muted">impl:ok → test:pass → review:pass</td>
+                    <td className="py-1 text-green-400 text-center">✓</td>
+                  </tr>
+                  <tr className="border-b border-brand-bg-tertiary/50">
+                    <td className="py-1 pr-4 text-brand-text-primary">Auth utils</td>
+                    <td className="py-1 pr-4 text-brand-text-muted text-center">1</td>
+                    <td className="py-1 pr-4 text-green-400">done</td>
+                    <td className="py-1 pr-4 text-brand-text-muted">wb/auth-utils</td>
+                    <td className="py-1 pr-4 text-brand-text-muted">2m05s</td>
+                    <td className="py-1 pr-4 text-brand-text-muted">impl:ok → test:pass → review:pass</td>
+                    <td className="py-1 text-green-400 text-center">✓</td>
+                  </tr>
+                  <tr className="border-b border-brand-bg-tertiary/50">
+                    <td className="py-1 pr-4 text-brand-text-primary">API routes</td>
+                    <td className="py-1 pr-4 text-brand-text-muted text-center">2</td>
+                    <td className="py-1 pr-4 text-green-400">done</td>
+                    <td className="py-1 pr-4 text-brand-text-muted">wb/api-routes</td>
+                    <td className="py-1 pr-4 text-brand-text-muted">4m18s</td>
+                    <td className="py-1 pr-4 text-brand-text-muted">impl:ok → test:fail → fix → test:pass → review:pass</td>
+                    <td className="py-1 text-green-400 text-center">✓</td>
+                  </tr>
+                  <tr>
+                    <td className="py-1 pr-4 text-brand-text-primary">Web UI</td>
+                    <td className="py-1 pr-4 text-brand-text-muted text-center">2</td>
+                    <td className="py-1 pr-4 text-green-400">done</td>
+                    <td className="py-1 pr-4 text-brand-text-muted">wb/web-ui</td>
+                    <td className="py-1 pr-4 text-brand-text-muted">5m10s</td>
+                    <td className="py-1 pr-4 text-brand-text-muted">impl:ok → test:pass → review:pass</td>
+                    <td className="py-1 text-green-400 text-center">✓</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
 
-            {/* Wave 2 */}
+            {/* Summary */}
             <div className="mt-5">
-              <div className="text-cyan-400 font-bold">—— Wave 2/2 (1 task) ——</div>
-              <div className="mt-3">
-                <table className="w-full border-collapse text-left">
-                  <thead>
-                    <tr className="border-b border-brand-bg-tertiary">
-                      <th className="py-1 pr-4 text-brand-text-secondary font-normal">Task</th>
-                      <th className="py-1 pr-4 text-brand-text-secondary font-normal">Status</th>
-                      <th className="py-1 pr-4 text-brand-text-secondary font-normal">Time</th>
-                      <th className="py-1 text-brand-text-secondary font-normal">Pipeline</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td className="py-1 pr-4 text-brand-text-primary">Task 4</td>
-                      <td className="py-1 pr-4 text-yellow-400">running</td>
-                      <td className="py-1 pr-4 text-brand-text-muted">1m47s</td>
-                      <td className="py-1 text-brand-text-muted">impl:ok → <span className="text-yellow-400">test...</span></td>
-                    </tr>
-                  </tbody>
-                </table>
+              <div className="text-cyan-400 font-bold">━━━ Summary ━━━</div>
+              <div className="mt-1 text-green-400">{"  "}✓ 4 completed</div>
+              <div className="mt-1 text-brand-text-muted">
+                All changes merged into: <span className="text-brand-text-primary">workbench-1</span>
               </div>
             </div>
           </div>
