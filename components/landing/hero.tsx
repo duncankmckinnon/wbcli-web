@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { CopyButton } from "@/components/shared/copy-button";
+import { InstallCommand } from "@/components/landing/install-command";
 import { GitHubStars } from "@/components/landing/github-stars";
 
 export function Hero() {
@@ -49,14 +49,7 @@ export function Hero() {
 
         {/* Install command */}
         <div className="mt-10 flex items-center justify-center">
-          <div className="flex items-center gap-4 rounded-xl border border-brand-bg-tertiary bg-brand-bg-secondary px-6 py-4 font-mono text-lg sm:text-xl">
-            <span className="text-brand-text-muted">$</span>
-            <span className="text-brand-text-primary">pip install wbcli</span>
-            <CopyButton
-              text="pip install wbcli"
-              className="ml-2 text-brand-text-muted hover:text-brand-text-primary transition-colors"
-            />
-          </div>
+          <InstallCommand size="lg" />
         </div>
 
         {/* CTA buttons */}
