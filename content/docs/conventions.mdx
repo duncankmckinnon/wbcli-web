@@ -1,0 +1,66 @@
+---
+title: Conventions
+description: Share coding conventions across every plan in a repo with .workbench/conventions.md.
+order: 4
+---
+
+`.workbench/conventions.md` is a **project-level, shared** conventions file. It holds the coding standards every plan in the repo should follow, so you don't have to repeat a `## Conventions` section in each plan.
+
+Drop your TypeScript rules, test commands, naming patterns, and git etiquette in one place and every plan in the repo inherits them.
+
+## How it's applied
+
+At run time, if a plan has **no** `## Conventions` section, workbench injects the contents of `.workbench/conventions.md` as a fallback. The injection is idempotent — if the plan already has a `## Conventions` section, the shared file is skipped and the plan's own conventions are used. A plan-level `## Conventions` section always **wins** over the shared file.
+
+The resulting conventions text is seen by every agent role: implementor, tester, reviewer, fixer, summarizer, branch reviewer, and PR writer. That keeps the whole pipeline aligned on the same standards.
+
+## Planner awareness
+
+When `.workbench/conventions.md` exists, `wb plan` is told **not** to write its own `## Conventions` section — the shared file is canonical and the planner stays out of its way. When the file is absent, the planner may write a `## Conventions` section if the source material implies one.
+
+This means you can adopt a shared conventions file at any time without conflicting with the planner.
+
+## Commands
+
+Manage the shared file with `wb conventions`:
+
+```bash
+wb conventions init              # write a starter conventions.md from a template
+wb conventions init --generate   # scan the codebase with an agent to draft conventions
+wb conventions edit              # open conventions.md in $EDITOR
+wb conventions show              # print conventions.md to stdout
+wb conventions delete            # remove the file
+```
+
+> **Tip:** `--generate` uses the [`generate-conventions`](/docs/skills) skill to survey the repo (languages, test runners, lint config, existing style) and produce a tailored draft instead of a blank template.
+
+## Template
+
+`wb conventions init` writes a starter file with these sections:
+
+````markdown
+# Project conventions
+
+## Code style
+- ...
+
+## Testing
+- ...
+
+## Git
+- ...
+
+## Naming
+- ...
+
+## Other
+- ...
+````
+
+Fill in the bullets with whatever your project actually requires — TypeScript strict mode, lint commands, branch naming rules, package manager, etc. Keep entries short and imperative; agents follow these as direct instructions.
+
+## See also
+
+- [Plans](/docs/plan-format) — how `## Conventions` works inside a plan
+- [Plan Frontmatter](/docs/plan-frontmatter) — run-time defaults declared per plan
+- [Skills](/docs/skills) — including `generate-conventions` used by `wb conventions init --generate`

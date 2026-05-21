@@ -25,6 +25,10 @@ parent: getting-started
 | `wb agents show <name>` | Show details for an agent adapter |
 | `wb agents add <name>` | Add or update a custom agent adapter |
 | `wb agents remove <name>` | Remove a custom agent adapter |
+| `wb conventions init` | Create a starter `.workbench/conventions.md` (`--generate` to draft from the repo) |
+| `wb conventions show` | Print the current conventions file |
+| `wb conventions edit` | Open the conventions file in `$EDITOR` |
+| `wb conventions delete` | Remove the conventions file |
 | `wb profile init` | Create profile.yaml from defaults |
 | `wb profile show` | Show resolved profile |
 | `wb profile set <key> <value>` | Update a profile field |
@@ -101,7 +105,7 @@ Plans may declare these keys in a YAML frontmatter block (`---` delimiters) at t
 | `push` | `--push` | bool |
 | `final_review` | `--final-review` | bool |
 
-See [Plan Frontmatter](/docs/plan-format#plan-frontmatter-run-config) for the full format and examples.
+See [Plan Frontmatter](/docs/plan-frontmatter) for the full format and examples.
 
 ### Examples
 
@@ -133,6 +137,19 @@ Run a range of waves:
 
 ```bash
 wb run plan.md -b workbench-1 --start-wave 2 --end-wave 4
+```
+
+Run only specific tasks by id or slug (repeatable):
+
+```bash
+wb run myplan --task token-service --task api-routes
+```
+
+Reference a plan by name (resolves to `.workbench/myplan/plan.md`):
+
+```bash
+wb run myplan -w 2
+wb run myplan -b workbench-1 --only-incomplete
 ```
 
 Resume a session, re-running every incomplete task:
@@ -282,17 +299,29 @@ wb merge -b <session-branch> [options]
 | `--branch-reviewer-directive TEXT` | Override the branch reviewer agent's instructions |
 | `--repo PATH` | Repository path (auto-detected if omitted) |
 
+### Examples
+
+```bash
+wb merge -b workbench-1                       # merge completed task branches
+wb merge -b workbench-1 --push                # also push the session branch to origin
+wb merge -b workbench-1 --push --review       # merge, run the branch review, open a PR on PASS
+wb merge -b workbench-1 --review --skip-pr    # review but never open a PR
+```
+
+See [Review & Pull Requests](/docs/review-pr-flow) for the full requirements → review → PR flow.
+
 ## wb final-review
 
 Alias: `wb review`. Run a whole-branch review for a completed session. Two agents run in sequence: a **requirements summarizer** extracts a structured digest from the plan, then a **branch reviewer** evaluates the session-branch diff against that digest and writes a markdown report.
 
 On `VERDICT: PASS`, workbench opens a GitHub PR via `gh pr create`. On `VERDICT: FAIL`, no PR is created — the report lists findings with file/line evidence and suggested fixes.
 
-Artifacts land under `.workbench/<plan-id>/reviews/<session>/`:
+Artifacts land under `.workbench/<plan-id>/wrap-up/<session>/`:
 - `requirements.md` — the requirements digest
-- `report.md` — the review report
+- `review.md` — the review report
+- `pr-body.md` — the PR title and body (written on PASS)
 
-Each run appends an entry to the session's `final_reviews` list in `.workbench/<plan-id>/status.yaml`. `wb status` surfaces the latest verdict and PR URL (or report path on fail).
+Each run appends an entry to the session's `final_reviews` list in `.workbench/<plan-id>/status.yaml`. `wb status` surfaces the latest verdict and PR URL (or review path on fail).
 
 ```bash
 wb final-review workbench-1                       # default: open PR on PASS
@@ -319,7 +348,7 @@ wb final-review workbench-1 --pr-title "My feat"  # override PR metadata
 | `--profile-name NAME` | Use a named profile |
 | `--repo PATH` | Repository path (auto-detected if omitted) |
 
-The `summarizer` and `branch_reviewer` roles are configurable in `profile.yaml` like any other role (`agent`, `directive`). See [Profiles](/docs/profiles).
+The `summarizer` and `branch_reviewer` roles are configurable in `profile.yaml` like any other role (`agent`, `directive`). See [Profiles](/docs/profiles) and [Review & Pull Requests](/docs/review-pr-flow).
 
 ## wb pull-request
 
@@ -495,6 +524,56 @@ Remove a custom agent adapter:
 ```bash
 wb agents remove <name> [--repo PATH]
 wb agents --plan <plan> remove <name>
+```
+
+## wb conventions
+
+Manage the shared conventions file at `.workbench/conventions.md`. The conventions file is loaded by every agent role (implementor, tester, reviewer, fixer, planner) and is the single place to record house style, libraries to prefer, things to avoid, and any other repo-wide guidance that should apply across all workbench-dispatched work.
+
+See [Conventions](/docs/conventions) for what to put in the file and how it's injected into agent prompts.
+
+### wb conventions init
+
+Create a starter `.workbench/conventions.md` with section headings and inline guidance to fill in. Errors if the file already exists (use `wb conventions edit` instead).
+
+```bash
+wb conventions init [options]
+```
+
+| Flag | Description |
+|---|---|
+| `--generate` | Dispatch the `generate-conventions` agent to draft a conventions file from the repo |
+| `--agent CMD` | Agent CLI command for `--generate` (default: `claude`) |
+| `--no-tmux` | Run the generator agent as a subprocess instead of tmux |
+| `--repo PATH` | Repository path (auto-detected if omitted) |
+
+```bash
+wb conventions init                # write a blank starter file
+wb conventions init --generate     # have an agent draft it from the repo
+```
+
+### wb conventions show
+
+Print the current conventions file to stdout. Exits non-zero with a friendly message if no conventions file exists.
+
+```bash
+wb conventions show [--repo PATH]
+```
+
+### wb conventions edit
+
+Open `.workbench/conventions.md` in `$EDITOR` (falls back to `vi`). Creates the file from the starter template if it doesn't exist yet.
+
+```bash
+wb conventions edit [--repo PATH]
+```
+
+### wb conventions delete
+
+Remove `.workbench/conventions.md`. Prompts for confirmation unless `--yes` is passed.
+
+```bash
+wb conventions delete [--yes] [--repo PATH]
 ```
 
 ## wb profile

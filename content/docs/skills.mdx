@@ -12,13 +12,14 @@ order: 8
 
 Skills are instruction files that teach your AI coding agent how to work with workbench. When installed, your agent can automatically install workbench, configure agents and profiles, and write execution plans — all from natural language prompts.
 
-Workbench ships three skills:
+Workbench ships four skills:
 
 | Skill | Trigger | What it does |
 |---|---|---|
 | `install-workbench` | "Install workbench", "set up wb" | Guides the agent through prerequisites, installation, and `wb setup` |
 | `configure-workbench` | "Configure agents", "set up profiles" | Helps configure agent adapters, profiles, and troubleshoot dispatch |
 | `use-workbench` | "Write a plan", `/use-workbench` | Converts your ideas into workbench plans with proper task graphs |
+| `generate-conventions` | "Generate conventions", `wb conventions init --generate` | Scans the codebase to draft `.workbench/conventions.md` shared by every agent |
 
 ## Installing Skills from the Download
 
@@ -41,7 +42,9 @@ This creates:
 │   └── SKILL.md
 ├── configure-workbench/
 │   └── SKILL.md
-└── use-workbench/
+├── use-workbench/
+│   └── SKILL.md
+└── generate-conventions/
     └── SKILL.md
 ```
 
@@ -52,6 +55,7 @@ mkdir -p .claude/skills
 cp -r .agents/skills/install-workbench .claude/skills/
 cp -r .agents/skills/configure-workbench .claude/skills/
 cp -r .agents/skills/use-workbench .claude/skills/
+cp -r .agents/skills/generate-conventions .claude/skills/
 ```
 
 4. **Ask your agent** to install workbench — it will now have the `install-workbench` skill and can walk you through the full setup:
@@ -63,11 +67,19 @@ cp -r .agents/skills/use-workbench .claude/skills/
 If you already have workbench installed, `wb setup` handles skill installation automatically:
 
 ```bash
-wb setup                    # auto-detect your agent platform and install skills
-wb setup --agent claude     # explicitly install for Claude Code
-wb setup --update           # force-update skills to the latest version
-wb setup --symlink          # symlink instead of copy (stays in sync with package updates)
+wb setup                    # auto-detect your agent platform and install skills into the repo
+wb setup --agent claude     # install for a specific agent (claude, codex, gemini, …)
+wb setup --global           # install to user-level paths (~/.claude/skills, etc.)
+wb setup --symlink          # symlink instead of copy so skills stay in sync with package updates
+wb setup --update           # force-update skills to the latest version on disk
 ```
+
+| Flag | Description |
+|---|---|
+| `--agent <name>` | Target a specific agent platform instead of auto-detecting |
+| `--global` | Install to user-level skill paths (e.g. `~/.claude/skills`) rather than the repo |
+| `--symlink` | Symlink skills from the installed `wbcli` package so they stay current |
+| `--update` | Overwrite existing skill files with the latest bundled versions |
 
 ## Using Skills
 
@@ -94,6 +106,16 @@ Ask your agent to configure agents or profiles:
 > "Create a profile for fast iteration with codex"
 
 The agent will use `wb agents` and `wb profile` commands to configure your setup.
+
+### generate-conventions
+
+Ask your agent to draft a shared conventions file for the repo:
+
+> "Generate conventions for this codebase"
+
+> "Update `.workbench/conventions.md` to match the current code"
+
+The skill backs `wb conventions init --generate`: it surveys the codebase, captures language, framework, tooling, and style decisions, and writes the result to `.workbench/conventions.md`. Every workbench agent then loads that file automatically so plans and tasks share the same ground rules. See [Conventions](/docs/conventions) for the full file format.
 
 ### use-workbench
 

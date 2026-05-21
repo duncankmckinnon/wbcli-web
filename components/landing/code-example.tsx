@@ -9,15 +9,34 @@ export function CodeExample() {
         </div>
 
         <div className="mt-16 grid grid-cols-1 gap-6 lg:grid-cols-2">
-          {/* Left panel — plan.md */}
+          {/* Left panel — plan with frontmatter */}
           <div className="overflow-hidden rounded-xl border border-brand-bg-tertiary bg-brand-bg-secondary">
             <div className="flex items-center border-b border-brand-bg-tertiary px-4 py-3">
               <span className="rounded bg-brand-bg-tertiary px-2 py-1 text-xs text-brand-text-secondary">
-                plan.md
+                .workbench/myfeature/plan.md
               </span>
             </div>
             <div className="p-6 font-mono text-sm leading-relaxed">
+              <div className="text-brand-text-muted">---</div>
               <div>
+                <span className="text-brand-text-primary">name:</span>{" "}
+                <span className="text-brand-text-secondary">myfeature</span>
+              </div>
+              <div>
+                <span className="text-brand-text-primary">max_concurrent:</span>{" "}
+                <span className="text-brand-text-secondary">4</span>
+              </div>
+              <div>
+                <span className="text-brand-text-primary">tdd:</span>{" "}
+                <span className="text-brand-text-secondary">true</span>
+              </div>
+              <div>
+                <span className="text-brand-text-primary">final_review:</span>{" "}
+                <span className="text-brand-text-secondary">true</span>
+              </div>
+              <div className="text-brand-text-muted">---</div>
+
+              <div className="mt-4">
                 <span className="text-green-400">## Context</span>
               </div>
               <div className="mt-1 text-brand-text-muted">
@@ -68,11 +87,20 @@ export function CodeExample() {
             <div className="p-6 font-mono text-sm leading-relaxed overflow-x-auto">
               <div>
                 <span className="text-brand-text-muted">$</span>{" "}
-                <span className="text-brand-text-primary">wb run plan.md</span>
+                <span className="text-brand-text-primary">wb run myfeature --final-review</span>
               </div>
 
               <div className="mt-4 space-y-0.5 text-brand-text-secondary">
+                <div>Plan: <span className="text-brand-text-primary">myfeature</span></div>
                 <div>Tasks: <span className="text-brand-text-primary">2</span> across <span className="text-brand-text-primary">2</span> wave(s)</div>
+                <div>Conventions: <span className="text-brand-text-primary">.workbench/conventions.md</span></div>
+              </div>
+
+              <div className="mt-4">
+                <div className="text-cyan-400 font-bold">—— Requirements ——</div>
+                <div className="mt-1 text-brand-text-muted">
+                  ✓ Digest written to .workbench/myfeature/wrap-up/workbench-1/requirements.md
+                </div>
               </div>
 
               <div className="mt-4">
@@ -89,7 +117,7 @@ export function CodeExample() {
                     <tr>
                       <td className="py-1 pr-3 text-brand-text-primary">User model</td>
                       <td className="py-1 pr-3 text-green-400">done</td>
-                      <td className="py-1 text-brand-text-muted">impl:ok → test:pass → review:pass</td>
+                      <td className="py-1 text-brand-text-muted">test:write → impl:ok → test:pass → review:pass</td>
                     </tr>
                   </tbody>
                 </table>
@@ -112,12 +140,22 @@ export function CodeExample() {
                     <tr>
                       <td className="py-1 pr-3 text-brand-text-primary">Auth endpoints</td>
                       <td className="py-1 pr-3 text-green-400">done</td>
-                      <td className="py-1 text-brand-text-muted">impl:ok → test:fail → fix → test:pass → review:pass</td>
+                      <td className="py-1 text-brand-text-muted">test:write → impl:ok → test:pass → review:pass</td>
                     </tr>
                   </tbody>
                 </table>
                 <div className="mt-2 text-brand-text-muted">
                   {"  "}✓ Merged 1 branch cleanly.
+                </div>
+              </div>
+
+              <div className="mt-4">
+                <div className="text-cyan-400 font-bold">—— Final Review & PR ——</div>
+                <div className="mt-1 text-brand-text-muted">
+                  ✓ Branch review: .workbench/myfeature/wrap-up/workbench-1/review.md
+                </div>
+                <div className="text-brand-text-muted">
+                  ✓ PR description: .workbench/myfeature/wrap-up/workbench-1/pr-body.md
                 </div>
               </div>
             </div>

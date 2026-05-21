@@ -10,6 +10,8 @@ Plans are markdown files with a specific structure. Workbench parses them into a
 
 Any `.md` file that follows the plan format can be used — name it however you like.
 
+Plans are referenced by **name**. `wb run myfeature` resolves to `.workbench/myfeature/plan.md`. A full path (`wb run .workbench/myfeature/plan.md`) also works. When you don't name a plan, workbench auto-numbers it (`workbench-1`, `workbench-2`, …).
+
 > **Tip:** You don't have to write plans by hand. Two options:
 >
 > - **`wb plan "<prompt>"`** — dispatches a planner agent from the CLI. Generates a plan at `.workbench/plan/plan.md`. Can also transform an existing document with `--from`. See [CLI Reference](/docs/cli-reference#wb-plan).
@@ -19,7 +21,30 @@ Any `.md` file that follows the plan format can be used — name it however you 
 
 For an overview of how plans, sessions, waves, tasks, branches, roles, profiles, and agents fit together, see [Architecture](/docs/architecture).
 
+## Plan Folder Layout
+
+Each plan lives in its own folder under `.workbench/`, named by the plan's slug. All artifacts for a plan — the plan source, status tracking, optional overrides, per-task worktrees, and final-review outputs — sit together in that folder. Project-level shared files live one directory up and act as defaults.
+
+```text
+.workbench/
+├── <plan_slug>/
+│   ├── plan.md               # the plan source (this file)
+│   ├── status.yaml           # task outcomes + session tracking
+│   ├── profile.yaml          # optional: plan-specific profile
+│   ├── agents.yaml           # optional: plan-specific agent config
+│   ├── conventions.md        # optional: plan-level conventions override
+│   ├── <task-id>/            # isolated worktree per task
+│   └── wrap-up/<session>/    # requirements.md, review.md, pr-body.md
+├── conventions.md            # project-level shared conventions
+├── profile.yaml              # project-level profile
+└── agents.yaml               # project-level agent config
+```
+
+Per-plan files (`profile.yaml`, `agents.yaml`, `conventions.md`) override the project-level files when present. Task worktrees and final-review outputs are kept alongside the plan so everything about a run stays in one place.
+
 ## Plan Structure
+
+> See also: **[Plan Frontmatter](/docs/plan-frontmatter)** for configuring runs via YAML at the top of a plan, and **[Conventions](/docs/conventions)** for the shared `.workbench/conventions.md` file.
 
 Every plan has three types of top-level sections, each marked with `##`:
 
@@ -211,48 +236,6 @@ Now both services can import from `src/types.ts` safely because it was created i
 
 ## Plan Frontmatter (Run Config)
 
-Plans can declare run-time defaults in a YAML frontmatter block at the very top of the file, before the `# Title` line. Plans without frontmatter continue to work exactly as before.
+Plans can declare run-time defaults — session branch, base, concurrency, TDD, final review, and more — in a YAML frontmatter block at the very top of the file, before the `# Title` line. CLI flags always override frontmatter, which overrides built-in defaults.
 
-```markdown
----
-session_branch: workbench-auth
-base: feature-auth
-tdd: true
-agent: claude
-max_concurrent: 6
-profile_name: fast
----
-# Auth refactor
-
-## Context
-...
-```
-
-CLI flags always override frontmatter values. Frontmatter overrides built-in defaults. Unknown keys raise an error — typos are never silently ignored.
-
-### Frontmatter schema
-
-| Key | CLI flag | Type |
-|---|---|---|
-| `session_branch` | `-b` / `--session-branch` | string (alias of `name`) |
-| `name` | `--name` | string (alias of `session_branch`) |
-| `base` | `--base` | string |
-| `local` | `--local` | bool |
-| `agent` | `--agent` | string |
-| `profile` | `--profile` | string (path) |
-| `profile_name` | `--profile-name` | string |
-| `max_concurrent` | `-j` / `--max-concurrent` | int (>= 1) |
-| `max_retries` | `--max-retries` | int (>= 0) |
-| `tdd` | `--tdd` | bool |
-| `skip_test` | `--skip-test` | bool |
-| `skip_review` | `--skip-review` | bool |
-| `retry_failed` | `--retry-failed` | bool |
-| `fail_fast` | `--fail-fast` | bool |
-| `cleanup` | `--cleanup` | bool |
-| `keep_branches` | `--keep-branches` | bool |
-| `push` | `--push` | bool |
-| `final_review` | `--final-review` | bool |
-
-### Flags not available in frontmatter
-
-`--repo`, `--no-tmux`, `-w` / `--start-wave` / `--end-wave`, `--task`, `--only-incomplete`, and `*-directive` flags are per-invocation and not plan-shaped — they remain CLI-only.
+See **[Plan Frontmatter](/docs/plan-frontmatter)** for the full schema, precedence rules, and examples.
