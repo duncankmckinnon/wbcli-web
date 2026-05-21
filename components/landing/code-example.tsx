@@ -13,7 +13,7 @@ export function CodeExample() {
           <div className="overflow-hidden rounded-xl border border-brand-bg-tertiary bg-brand-bg-secondary">
             <div className="flex items-center border-b border-brand-bg-tertiary px-4 py-3">
               <span className="rounded bg-brand-bg-tertiary px-2 py-1 text-xs text-brand-text-secondary">
-                .workbench/myfeature.md
+                .workbench/myfeature/plan.md
               </span>
             </div>
             <div className="p-6 font-mono text-sm leading-relaxed">
@@ -23,7 +23,7 @@ export function CodeExample() {
                 <span className="text-brand-text-secondary">myfeature</span>
               </div>
               <div>
-                <span className="text-brand-text-primary">concurrency:</span>{" "}
+                <span className="text-brand-text-primary">max_concurrent:</span>{" "}
                 <span className="text-brand-text-secondary">4</span>
               </div>
               <div>
@@ -99,7 +99,7 @@ export function CodeExample() {
               <div className="mt-4">
                 <div className="text-cyan-400 font-bold">—— Requirements ——</div>
                 <div className="mt-1 text-brand-text-muted">
-                  ✓ Digest written to .workbench/myfeature/requirements.md
+                  ✓ Digest written to .workbench/myfeature/wrap-up/workbench-1/requirements.md
                 </div>
               </div>
 
@@ -152,10 +152,10 @@ export function CodeExample() {
               <div className="mt-4">
                 <div className="text-cyan-400 font-bold">—— Final Review & PR ——</div>
                 <div className="mt-1 text-brand-text-muted">
-                  ✓ Branch review: .workbench/myfeature/review.md
+                  ✓ Branch review: .workbench/myfeature/wrap-up/workbench-1/review.md
                 </div>
                 <div className="text-brand-text-muted">
-                  ✓ PR description: .workbench/myfeature/pr.md
+                  ✓ PR description: .workbench/myfeature/wrap-up/workbench-1/pr-body.md
                 </div>
               </div>
             </div>

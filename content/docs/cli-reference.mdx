@@ -105,7 +105,7 @@ Plans may declare these keys in a YAML frontmatter block (`---` delimiters) at t
 | `push` | `--push` | bool |
 | `final_review` | `--final-review` | bool |
 
-See [Plan Frontmatter](/docs/plan-format#plan-frontmatter-run-config) for the full format and examples.
+See [Plan Frontmatter](/docs/plan-frontmatter) for the full format and examples.
 
 ### Examples
 
@@ -316,11 +316,12 @@ Alias: `wb review`. Run a whole-branch review for a completed session. Two agent
 
 On `VERDICT: PASS`, workbench opens a GitHub PR via `gh pr create`. On `VERDICT: FAIL`, no PR is created — the report lists findings with file/line evidence and suggested fixes.
 
-Artifacts land under `.workbench/<plan-id>/reviews/<session>/`:
+Artifacts land under `.workbench/<plan-id>/wrap-up/<session>/`:
 - `requirements.md` — the requirements digest
-- `report.md` — the review report
+- `review.md` — the review report
+- `pr-body.md` — the PR title and body (written on PASS)
 
-Each run appends an entry to the session's `final_reviews` list in `.workbench/<plan-id>/status.yaml`. `wb status` surfaces the latest verdict and PR URL (or report path on fail).
+Each run appends an entry to the session's `final_reviews` list in `.workbench/<plan-id>/status.yaml`. `wb status` surfaces the latest verdict and PR URL (or review path on fail).
 
 ```bash
 wb final-review workbench-1                       # default: open PR on PASS

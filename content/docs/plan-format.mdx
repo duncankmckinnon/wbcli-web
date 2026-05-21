@@ -236,48 +236,6 @@ Now both services can import from `src/types.ts` safely because it was created i
 
 ## Plan Frontmatter (Run Config)
 
-Plans can declare run-time defaults in a YAML frontmatter block at the very top of the file, before the `# Title` line. Plans without frontmatter continue to work exactly as before.
+Plans can declare run-time defaults — session branch, base, concurrency, TDD, final review, and more — in a YAML frontmatter block at the very top of the file, before the `# Title` line. CLI flags always override frontmatter, which overrides built-in defaults.
 
-```markdown
----
-session_branch: workbench-auth
-base: feature-auth
-tdd: true
-agent: claude
-max_concurrent: 6
-profile_name: fast
----
-# Auth refactor
-
-## Context
-...
-```
-
-CLI flags always override frontmatter values. Frontmatter overrides built-in defaults. Unknown keys raise an error — typos are never silently ignored.
-
-### Frontmatter schema
-
-| Key | CLI flag | Type |
-|---|---|---|
-| `session_branch` | `-b` / `--session-branch` | string (alias of `name`) |
-| `name` | `--name` | string (alias of `session_branch`) |
-| `base` | `--base` | string |
-| `local` | `--local` | bool |
-| `agent` | `--agent` | string |
-| `profile` | `--profile` | string (path) |
-| `profile_name` | `--profile-name` | string |
-| `max_concurrent` | `-j` / `--max-concurrent` | int (>= 1) |
-| `max_retries` | `--max-retries` | int (>= 0) |
-| `tdd` | `--tdd` | bool |
-| `skip_test` | `--skip-test` | bool |
-| `skip_review` | `--skip-review` | bool |
-| `retry_failed` | `--retry-failed` | bool |
-| `fail_fast` | `--fail-fast` | bool |
-| `cleanup` | `--cleanup` | bool |
-| `keep_branches` | `--keep-branches` | bool |
-| `push` | `--push` | bool |
-| `final_review` | `--final-review` | bool |
-
-### Flags not available in frontmatter
-
-`--repo`, `--no-tmux`, `-w` / `--start-wave` / `--end-wave`, `--task`, `--only-incomplete`, and `*-directive` flags are per-invocation and not plan-shaped — they remain CLI-only.
+See **[Plan Frontmatter](/docs/plan-frontmatter)** for the full schema, precedence rules, and examples.
