@@ -87,7 +87,7 @@ export function Hero() {
       </div>
 
       {/* Terminal mockup */}
-      <div className="hero-fade mx-auto mt-16 max-w-4xl">
+      <div className="hero-fade mx-auto mt-16 max-w-6xl">
         <div className="overflow-hidden rounded-xl border border-brand-bg-tertiary bg-brand-bg-secondary shadow-2xl">
           {/* Terminal header */}
           <div className="flex items-center gap-2 border-b border-brand-bg-tertiary px-4 py-3">
@@ -104,12 +104,19 @@ export function Hero() {
               <span className="text-brand-text-muted">$</span> wb run my-feature
             </div>
 
+            {/* Parsed */}
+            <div className="mt-4 text-brand-text-secondary">
+              Parsed <span className="text-brand-text-primary">4</span> task(s) from .workbench/my-feature/plan.md
+            </div>
+
             {/* Plan info */}
             <div className="mt-4 space-y-0.5 text-brand-text-secondary">
               <div>Plan: <span className="text-brand-text-primary">My Feature</span></div>
               <div>Tasks: <span className="text-brand-text-primary">4</span> across <span className="text-brand-text-primary">2</span> wave(s)</div>
-              <div>Concurrency: <span className="text-brand-text-primary">4</span> · Max retries: <span className="text-brand-text-primary">2</span></div>
-              <div>Session branch: <span className="text-brand-text-primary">workbench-1</span></div>
+              <div>Concurrency: <span className="text-brand-text-primary">4</span></div>
+              <div>Max retries: <span className="text-brand-text-primary">2</span></div>
+              <div>Session branch: <span className="text-brand-text-primary">my-feature</span></div>
+              <div>tmux: <span className="text-brand-text-primary">enabled</span></div>
             </div>
 
             {/* Run table */}
@@ -173,8 +180,10 @@ export function Hero() {
               <div className="text-cyan-400 font-bold">━━━ Summary ━━━</div>
               <div className="mt-1 text-green-400">{"  "}✓ 4 completed</div>
               <div className="mt-1 text-brand-text-muted">
-                All changes merged into: <span className="text-brand-text-primary">workbench-1</span>
+                All changes merged into: <span className="text-brand-text-primary">my-feature</span>
               </div>
+              <div className="text-brand-text-muted">{"  "}git checkout my-feature</div>
+              <div className="text-brand-text-muted">{"  "}git diff main...my-feature</div>
             </div>
           </div>
         </div>

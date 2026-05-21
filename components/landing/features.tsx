@@ -2,6 +2,20 @@ const features = [
   {
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3Z" />
+        <path d="M5 3v4" />
+        <path d="M19 17v4" />
+        <path d="M3 5h4" />
+        <path d="M17 19h4" />
+      </svg>
+    ),
+    title: "Agent Skills",
+    description:
+      "Bundled skills let your agent develop plans and guide the whole process — install workbench, write plans, configure agents, and generate conventions",
+  },
+  {
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
         <circle cx="9" cy="7" r="4" />
         <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
@@ -15,41 +29,6 @@ const features = [
   {
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-      </svg>
-    ),
-    title: "Parallel Execution",
-    description:
-      "Independent tasks run simultaneously in isolated git worktrees, ordered into waves by their dependencies",
-  },
-  {
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-        <polyline points="14 2 14 8 20 8" />
-        <path d="m9 15 2 2 4-4" />
-      </svg>
-    ),
-    title: "TDD Mode",
-    description:
-      "Tests first, implementation second — built into the pipeline",
-  },
-  {
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-        <path d="M9 7h7" />
-        <path d="M9 11h7" />
-      </svg>
-    ),
-    title: "Shared Conventions",
-    description:
-      "One conventions file at .workbench/conventions.md every plan inherits — house style for every agent",
-  },
-  {
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M9 11l3 3L22 4" />
         <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
       </svg>
@@ -57,6 +36,16 @@ const features = [
     title: "Automated Review & PRs",
     description:
       "Requirements digest up front, branch review at the end, and a polished pull request description on completion",
+  },
+  {
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+      </svg>
+    ),
+    title: "Parallel Execution",
+    description:
+      "Independent tasks run simultaneously in isolated git worktrees, ordered into waves by their dependencies",
   },
   {
     icon: (
@@ -74,22 +63,53 @@ const features = [
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
         <polyline points="14 2 14 8 20 8" />
+        <path d="m9 15 2 2 4-4" />
+      </svg>
+    ),
+    title: "TDD Mode",
+    description:
+      "Tests first, implementation second — built into the pipeline",
+  },
+  {
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+        <polyline points="14 2 14 8 20 8" />
         <path d="M10 13h4" />
         <path d="M10 17h4" />
       </svg>
     ),
     title: "Plans by Name",
-    description:
-      "Reference a plan by name with wb run myfeature — frontmatter configures the run and every artifact lives in .workbench/myfeature/",
+    description: (
+      <>
+        Reference plans by name during runs (
+        <span className="whitespace-nowrap">wb run &lt;plan-name&gt;</span>) —
+        frontmatter configures the run, and every artifact lives in{" "}
+        <span className="whitespace-nowrap">.workbench/&lt;plan-name&gt;/</span>
+      </>
+    ),
   },
   {
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M7 16V4M17 8v12" />
-        <path d="M3 12h4" />
-        <path d="M17 12h4" />
-        <path d="m7 4-3 4 3 4" />
-        <path d="m17 20 3-4-3-4" />
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+        <path d="M9 7h7" />
+        <path d="M9 11h7" />
+      </svg>
+    ),
+    title: "Shared Conventions",
+    description:
+      "Add or generate a conventions.md in your .workbench folder so every plan inherits the same instructions for style, formatting, and more",
+  },
+  {
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="6" cy="6" r="3" />
+        <circle cx="18" cy="6" r="3" />
+        <circle cx="6" cy="18" r="3" />
+        <path d="M6 9v6" />
+        <path d="M18 9c0 6-6 9-9 9" />
       </svg>
     ),
     title: "Auto-Merge",
