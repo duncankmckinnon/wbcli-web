@@ -1,0 +1,82 @@
+---
+title: Plan Frontmatter
+description: Configure a run directly from the plan with YAML frontmatter — fields, defaults, and precedence.
+order: 1
+parent: plan-format
+---
+
+## Overview
+
+A plan may begin with an optional YAML frontmatter block — delimited by `---` lines — placed **before** the `# Title` line. Frontmatter sets run options so you don't have to pass them as CLI flags every time you run the plan.
+
+Plans without frontmatter continue to work exactly as before. Unknown keys raise an error, so typos are never silently ignored.
+
+## Fields
+
+Each frontmatter key maps to a CLI flag on [`wb run`](/docs/cli-reference#wb-run). The types and equivalents are:
+
+| Key | Type | CLI equivalent |
+|---|---|---|
+| `session_branch` / `name` | string | `-b` / `--session-branch` / `--name` |
+| `base` | string | `--base` |
+| `local` | bool | `--local` |
+| `agent` | string | `--agent` |
+| `profile` | string (path) | `--profile` |
+| `profile_name` | string | `--profile-name` |
+| `max_concurrent` | int (≥1) | `-j` / `--max-concurrent` |
+| `max_retries` | int (≥0) | `--max-retries` |
+| `tdd` | bool | `--tdd` |
+| `skip_test` | bool | `--skip-test` |
+| `skip_review` | bool | `--skip-review` |
+| `retry_failed` | bool | `--retry-failed` |
+| `fail_fast` | bool | `--fail-fast` |
+| `cleanup` | bool | `--cleanup` |
+| `keep_branches` | bool | `--keep-branches` |
+| `push` | bool | `--push` |
+| `final_review` | bool | `--final-review` |
+
+> **Tip:** `session_branch` and `name` are aliases for the same field — use whichever reads better in your plan.
+
+## Precedence
+
+When the same setting is provided in more than one place, workbench resolves it in this order:
+
+**CLI flags > frontmatter > built-in defaults.**
+
+A flag passed on the command line always overrides the same setting in frontmatter, and frontmatter overrides the built-in default. This means you can encode the typical configuration for a plan in frontmatter and still override any value for a one-off run.
+
+## Example
+
+A plan with frontmatter sits above the title and the usual `## Context`, `## Conventions`, and `## Task:` sections:
+
+````markdown
+---
+session_branch: workbench-auth
+base: feature-auth
+tdd: true
+max_concurrent: 6
+final_review: true
+---
+# Auth refactor
+
+(Context, Conventions, and Task sections follow as normal — see the Plans page.)
+````
+
+Running this plan with no extra flags is equivalent to running:
+
+```bash
+wb run plan.md \
+  --session-branch workbench-auth \
+  --base feature-auth \
+  --tdd \
+  --max-concurrent 6 \
+  --final-review
+```
+
+Passing `--max-concurrent 2` on the command line would override the frontmatter value of `6` for that run, while every other field stays as declared in the plan.
+
+## See also
+
+- [Plans](/docs/plan-format) — full plan structure and task syntax
+- [CLI Reference](/docs/cli-reference) — every flag, including those that are CLI-only
+- [Review & Pull Requests](/docs/review-pr-flow) — how `final_review`, `skip_review`, and `push` interact with the post-run flow
