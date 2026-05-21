@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CopyButton } from "@/components/shared/copy-button";
+import { InstallCommand } from "@/components/landing/install-command";
 
 export function CTAFooter() {
   return (
@@ -14,14 +14,7 @@ export function CTAFooter() {
 
         {/* Install command */}
         <div className="mt-8 flex items-center justify-center">
-          <div className="flex items-center gap-3 rounded-lg border border-brand-bg-tertiary bg-brand-bg-secondary px-5 py-3 font-mono text-sm">
-            <span className="text-brand-text-muted">$</span>
-            <span className="text-brand-text-primary">pip install wbcli</span>
-            <CopyButton
-              text="pip install wbcli"
-              className="ml-2 text-brand-text-muted hover:text-brand-text-primary transition-colors"
-            />
-          </div>
+          <InstallCommand size="sm" />
         </div>
 
         {/* CTA buttons */}
