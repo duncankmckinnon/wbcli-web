@@ -26,21 +26,36 @@ Before installing workbench, make sure you have the following:
 
 Your agent CLI must be installed and authenticated separately. Workbench dispatches work to these agents — it does not bundle them.
 
+> **Tip:** Installing via Homebrew automatically pulls in Python, git, and tmux. The manual prerequisite install above is mainly for the pip and from-source paths.
+
 ## Installation
 
-**pip (all platforms):**
-
-```bash
-pip install wbcli
-```
-
-**Homebrew (macOS / Linux):**
+### Homebrew (recommended)
 
 ```bash
 brew install duncankmckinnon/tap/workbench
 ```
 
-This installs the `wb` command in your active Python environment.
+This taps `duncankmckinnon/tap` and installs the `wb` command along with its dependencies — Python 3.12, git, and tmux.
+
+### pip / uv / pipx
+
+Install from PyPI into your active Python environment:
+
+```bash
+pip install wbcli       # or: uv tool install wbcli
+                        # or: pipx install wbcli
+```
+
+### From source
+
+```bash
+git clone https://github.com/duncankmckinnon/workbench.git
+cd workbench
+pip install -e ".[dev]"
+```
+
+The `wb` command is now available on your PATH. Requirements: Python 3.11+ and git on PATH; tmux is optional — run with `--no-tmux` if you don't have it.
 
 ## Project Setup
 
