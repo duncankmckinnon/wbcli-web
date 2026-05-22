@@ -7,36 +7,45 @@ order: 5
 ## Overview
 
 After a session's task branches are merged, workbench can run a **final review** flow that produces
-a requirements digest, reviews the whole session diff, and — if the review passes — writes a pull
-request description and opens the PR.
+a requirements digest, iteratively reviews and fixes the session branch, and — once the review
+passes — writes a pull request description and opens the PR.
 
 This turns the end of a run into a structured handoff: a summary of what was asked for, an
-independent review of what shipped, and a PR body that lines up with both.
+independent review that loops until the code meets requirements, and a PR body that lines up with both.
 
-## The three agents
+## The agents
 
-The flow runs three agents in sequence. Each agent has a dedicated role so you can swap models or
-adapters in your [profile](/docs/profiles).
+The flow runs a summarizer once, then a reviewer/fixer loop, then a PR writer on success. Each
+agent has a dedicated role so you can swap models or adapters in your [profile](/docs/profiles).
 
 ```mermaid
 flowchart LR
     Req[RequirementsSummarizer<br/>role: summarizer]
     Rev[BranchReviewer<br/>role: branch_reviewer]
+    Fix[BranchFixer<br/>role: fixer]
+    Merge[Merge review branch]
     PR[PrWriter<br/>role: pr_writer]
 
     Req -->|requirements.md| Rev
-    Rev -->|VERDICT: PASS| PR
-    Rev -->|VERDICT: FAIL| Stop[Stop — no PR]
+    Rev -->|"VERDICT: PASS"| Merge
+    Rev -->|"VERDICT: FAIL<br/>(within max_retries)"| Fix
+    Fix -->|commits fixes| Rev
+    Rev -->|"retries exhausted"| Stop[Stop — no PR]
+    Merge --> PR
     PR -->|pr-body.md| GH[gh pr create]
 ```
 
 1. **RequirementsSummarizer** (role `summarizer`) — reads the plan's title and `## Context` and
    produces a structured requirements digest at `wrap-up/<session>/requirements.md`.
 2. **BranchReviewer** (role `branch_reviewer`) — reads the requirements plus the session branch
-   diff (`git diff <base>..<session>`), writes findings with file/line evidence and concrete fixes,
-   and emits a verdict (`VERDICT: PASS` or `VERDICT: FAIL`) at
-   `wrap-up/<session>/review.md`.
-3. **PrWriter** (role `pr_writer`) — runs **only if the verdict is PASS**. Reads the plan title and
+   diff, writes findings with file/line evidence and concrete fixes, and emits a verdict
+   (`VERDICT: PASS` or `VERDICT: FAIL`) at `wrap-up/<session>/review.md`. Runs in a loop with
+   the BranchFixer until a PASS is issued or `--max-retries` (default: 2) is exhausted.
+3. **BranchFixer** (role `fixer`) — runs after each `VERDICT: FAIL`. Applies the reviewer's
+   findings to the code on a dedicated `-review` branch. The reviewer then re-evaluates the
+   updated diff on the next iteration.
+4. **PrWriter** (role `pr_writer`) — runs **only if the verdict is PASS**. The review branch is
+   first ff-merged back into the session branch, then the PR writer reads the plan title and
    Context, `git diff --stat`, commit subjects, and merged task titles to produce a PR title and
    body at `wrap-up/<session>/pr-body.md`. Opens the PR via `gh pr create` when the `gh` CLI is
    available; otherwise it prints a copy-pasteable command.
