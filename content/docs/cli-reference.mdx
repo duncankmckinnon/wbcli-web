@@ -290,6 +290,7 @@ wb merge -b <session-branch> [options]
 | `--keep-branches` | Keep task branches after merging |
 | `--push` | Push the session branch to origin after merging (sets upstream tracking) |
 | `--review` | After merging, run a whole-branch review (and open a PR on PASS) |
+| `--max-retries N` | Max review/fix iterations when `--review` is active (default: 2) |
 | `--pr-title TEXT` | Override the PR title |
 | `--pr-body-file PATH` | Use this file's content as the PR body |
 | `--pr-base BRANCH` | Override the PR base branch |
@@ -312,9 +313,9 @@ See [Review & Pull Requests](/docs/review-pr-flow) for the full requirements →
 
 ## wb final-review
 
-Alias: `wb review`. Run a whole-branch review for a completed session. Two agents run in sequence: a **requirements summarizer** extracts a structured digest from the plan, then a **branch reviewer** evaluates the session-branch diff against that digest and writes a markdown report.
+Alias: `wb review`. Run a whole-branch review for a completed session. A **requirements summarizer** extracts a structured digest from the plan, then a **branch reviewer** and **branch fixer** loop until the review passes or `--max-retries` is exhausted.
 
-On `VERDICT: PASS`, workbench opens a GitHub PR via `gh pr create`. On `VERDICT: FAIL`, no PR is created — the report lists findings with file/line evidence and suggested fixes.
+On `VERDICT: PASS`, the review branch is merged back into the session branch and workbench opens a GitHub PR via `gh pr create`. On `VERDICT: FAIL` after all retries, no PR is created — the final report lists findings with file/line evidence and suggested fixes.
 
 Artifacts land under `.workbench/<plan-id>/wrap-up/<session>/`:
 - `requirements.md` — the requirements digest
@@ -337,6 +338,7 @@ wb final-review workbench-1 --pr-title "My feat"  # override PR metadata
 |---|---|
 | `--agent CMD` | Agent CLI command (default: `claude`) |
 | `--no-tmux` | Run agents as subprocesses instead of tmux |
+| `--max-retries N` | Max review/fix iterations (default: 2) |
 | `--pr-title TEXT` | Override the PR title (default: plan H1, else plan id) |
 | `--pr-body-file PATH` | Use this file's content as the PR body |
 | `--pr-base BRANCH` | Override the PR base branch (default: session's recorded base) |
@@ -348,7 +350,7 @@ wb final-review workbench-1 --pr-title "My feat"  # override PR metadata
 | `--profile-name NAME` | Use a named profile |
 | `--repo PATH` | Repository path (auto-detected if omitted) |
 
-The `summarizer` and `branch_reviewer` roles are configurable in `profile.yaml` like any other role (`agent`, `directive`). See [Profiles](/docs/profiles) and [Review & Pull Requests](/docs/review-pr-flow).
+The `summarizer`, `branch_reviewer`, and `fixer` roles are configurable in `profile.yaml` like any other role (`agent`, `directive`). See [Profiles](/docs/profiles) and [Review & Pull Requests](/docs/review-pr-flow).
 
 ## wb pull-request
 
