@@ -138,7 +138,7 @@ export function CodeExample() {
                       <td className="py-1 pr-3 text-green-400">done</td>
                       <td className="py-1 pr-3 text-brand-text-muted">wb/auth-endpoints</td>
                       <td className="py-1 pr-3 text-brand-text-muted">4m18s</td>
-                      <td className="py-1 pr-3 text-brand-text-muted">test:fail → impl:ok → test:fail → fix → test:pass → review:pass</td>
+                      <td className="py-1 pr-3 text-brand-text-muted">test:fail → impl:ok → test:pass → review:fail → fix → review:pass</td>
                       <td className="py-1 text-green-400 text-center">✓</td>
                     </tr>
                   </tbody>
