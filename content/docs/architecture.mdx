@@ -104,7 +104,7 @@ Configuration that maps each role to an agent. Stored in `.workbench/profile.yam
 Profiles can also be **named** for different workflows — create `profile.<name>.yaml` and use it with `--profile-name <name>`:
 
 ```bash
-wb profile init --name fast --set reviewer.agent=gemini
+wb profile init --name fast --set reviewer.agent=antigravity
 wb run plan.md --profile-name fast
 ```
 
@@ -112,7 +112,7 @@ This is useful when you want different agent configurations for different tasks 
 
 ### Agent Config
 
-`.workbench/agents.yaml` — registers custom agent adapters so they can be used in profiles and `--agent` flags. Built-in adapters (Claude, Gemini, Codex, Cursor, Copilot) are available without any config. See [Agents](/docs/agents#custom-agents).
+`.workbench/agents.yaml` — registers custom agent adapters so they can be used in profiles and `--agent` flags. Built-in adapters (Claude, Antigravity, Codex, Cursor, Copilot) are available without any config. See [Agents](/docs/agents#custom-agents).
 
 ### Agent
 
@@ -121,7 +121,7 @@ The actual CLI that fulfills a role. Workbench ships with built-in adapters for 
 | Name | Command | Provider |
 |---|---|---|
 | claude *(default)* | `claude` | Anthropic |
-| gemini | `gemini` | Google |
+| antigravity | `agy` | Google |
 | codex | `codex` | OpenAI |
 | cursor | `agent` | Cursor |
 | copilot | `copilot` | GitHub |

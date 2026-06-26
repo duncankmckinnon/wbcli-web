@@ -68,7 +68,7 @@ If you already have workbench installed, `wb setup` handles skill installation a
 
 ```bash
 wb setup                    # auto-detect your agent platform and install skills into the repo
-wb setup --agent claude     # install for a specific agent (claude, codex, gemini, …)
+wb setup --agent claude     # install for a specific agent (claude, codex, antigravity, …)
 wb setup --global           # install to user-level paths (~/.claude/skills, etc.)
 wb setup --symlink          # symlink instead of copy so skills stay in sync with package updates
 wb setup --update           # force-update skills to the latest version on disk
@@ -99,7 +99,7 @@ The agent will check your Python version, git, tmux, and agent CLI, then run `pi
 
 Ask your agent to configure agents or profiles:
 
-> "Set up Gemini as the reviewer and Claude as the implementor"
+> "Set up Antigravity as the reviewer and Claude as the implementor"
 
 > "Add a custom agent adapter for my-cli"
 
@@ -137,7 +137,7 @@ The agent reads the existing document, identifies independent units of work, det
 
 **Running the plan:** Once a plan is ready, the skill can also generate the `wb run` command with the right flags for your situation — TDD mode, specific base branches, named sessions, agent selection, directive overrides, and more:
 
-> "Run this plan with Gemini for implementation and Claude for review"
+> "Run this plan with Antigravity for implementation and Claude for review"
 
 > "Run plan.md in TDD mode on the feature-auth branch"
 
