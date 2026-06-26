@@ -11,7 +11,7 @@ Workbench ships with built-in adapters for five agent CLIs, plus support for any
 | Agent | Command | Provider |
 |---|---|---|
 | Claude Code | `claude` | Anthropic |
-| Gemini CLI | `gemini` | Google |
+| Google Antigravity | `agy` | Google |
 | OpenAI Codex | `codex` | OpenAI |
 | Cursor CLI | `agent` | Cursor |
 | Copilot CLI | `copilot` | GitHub |
@@ -21,8 +21,8 @@ Each agent goes through the same pipeline stages: **implement → test → revie
 Use `--agent` to select which agent to use:
 
 ```bash
-wb run plan.md --agent claude     # default
-wb run plan.md --agent gemini
+wb run plan.md --agent claude        # default
+wb run plan.md --agent antigravity
 wb run plan.md --agent codex
 wb run plan.md --agent cursor
 wb run plan.md --agent copilot
@@ -35,7 +35,7 @@ Use `wb setup` to install agent skill files for your platform:
 ```bash
 wb setup                           # auto-detect agent, install skills locally
 wb setup --agent claude            # install to <repo>/.claude/skills/ + .agents/skills/
-wb setup --agent gemini            # install to <repo>/.agents/skills/
+wb setup --agent antigravity       # install to <repo>/.agents/skills/
 wb setup --agent cursor            # install to <repo>/.cursor/skills/
 wb setup --agent copilot           # install to <repo>/.github/skills/ + .agents/skills/
 wb setup --agent manual            # print paths for manual setup
@@ -61,7 +61,7 @@ wb agents add my-agent --command new-cli   # update an existing agent
 wb agents remove my-agent         # remove a custom agent
 ```
 
-`wb agents init` creates `.workbench/agents.yaml` pre-populated with the configs for all built-in adapters (Claude, Gemini, Codex, Cursor, Copilot). Use this as a starting point to customize command flags, output parsing, or to add your own agents.
+`wb agents init` creates `.workbench/agents.yaml` pre-populated with the configs for all built-in adapters (Claude, Antigravity, Codex, Cursor, Copilot). Use this as a starting point to customize command flags, output parsing, or to add your own agents.
 
 ### Plan-scoped agents
 
@@ -137,7 +137,7 @@ The `{prompt}` placeholder in `args` is replaced with the agent's prompt at runt
 Use [profiles](/docs/profiles) to assign different agents to different pipeline roles:
 
 ```bash
-wb profile init --set implementor.agent=gemini --set reviewer.agent=claude
+wb profile init --set implementor.agent=antigravity --set reviewer.agent=claude
 ```
 
 Or edit `.workbench/profile.yaml` directly:
@@ -145,7 +145,7 @@ Or edit `.workbench/profile.yaml` directly:
 ```yaml
 roles:
   implementor:
-    agent: gemini
+    agent: antigravity
   tester:
     agent: claude
   reviewer:
@@ -159,6 +159,45 @@ You can also assign custom agents to roles:
 ```bash
 wb profile set implementor.agent my-agent
 ```
+
+## Headroom (Cost Savings)
+
+Route dispatched agents through a local headroom proxy to cut token costs. Off by default. Headroom is user-provided — install it separately:
+
+```bash
+pipx install "headroom-ai[all]"   # requires Python 3.10+
+```
+
+### Enabling headroom
+
+Enable for a single run with the `--headroom` flag:
+
+```bash
+wb run plan.md --headroom         # force on
+wb run plan.md --no-headroom      # force off (overrides config)
+```
+
+Or set a persistent default via a top-level `headroom:` block in `.workbench/agents.yaml`:
+
+```yaml
+headroom:
+  enabled: false        # off by default; set true to route agents through the proxy
+  port: 8787            # local port the proxy listens on
+  autostart: true       # start the proxy if nothing is listening on `port`
+  command: headroom     # binary to invoke (default: `headroom`)
+
+agents:
+  # ... your agent adapters
+```
+
+### How it works
+
+- **One shared proxy per `wb run`** — not one per agent.
+- **Auto-start** if nothing is listening on `port`; **reuse** an existing listener if there is one.
+- **Teardown** only what workbench started — an existing proxy keeps running.
+- **Wired today:** `claude` (overlays `ANTHROPIC_BASE_URL`) and `codex` (overlays `OPENAI_BASE_URL`).
+- **Other adapters** run normally with a one-time warning until their base-URL overrides are verified.
+- **Missing binary?** Workbench logs a warning with the install hint and continues — a run never fails over a cost optimization.
 
 ## Directive Overrides
 

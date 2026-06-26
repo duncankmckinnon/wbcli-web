@@ -13,8 +13,8 @@ Profiles configure which agent CLI and instructions are used for each pipeline r
 ```bash
 wb profile init                                            # create .workbench/profile.yaml from defaults
 wb profile init --global                                   # create ~/.workbench/profile.yaml
-wb profile init --set reviewer.agent=gemini                # create with inline overrides
-wb profile init --set reviewer.agent=gemini --set tester.directive_extend="Run with -x"
+wb profile init --set reviewer.agent=antigravity           # create with inline overrides
+wb profile init --set reviewer.agent=antigravity --set tester.directive_extend="Run with -x"
 ```
 
 ## Named Profiles
@@ -22,7 +22,7 @@ wb profile init --set reviewer.agent=gemini --set tester.directive_extend="Run w
 Create multiple profiles for different workflows:
 
 ```bash
-wb profile init --name fast --set reviewer.agent=gemini --set implementor.agent=codex
+wb profile init --name fast --set reviewer.agent=antigravity --set implementor.agent=codex
 wb profile init --name security --set reviewer.directive="Focus only on security vulnerabilities."
 wb run plan.md --profile-name fast                         # use a named profile
 ```
@@ -34,7 +34,7 @@ Named profiles are stored as `profile.<name>.yaml` alongside the default `profil
 Use `wb profile set` to update individual fields:
 
 ```bash
-wb profile set reviewer.agent gemini                       # update default profile
+wb profile set reviewer.agent antigravity                  # update default profile
 wb profile set tester.directive_extend "Run pytest with -x flag."
 wb profile set reviewer.agent codex --name fast            # update a named profile
 ```
@@ -44,7 +44,7 @@ Or edit `.workbench/profile.yaml` directly:
 ```yaml
 roles:
   reviewer:
-    agent: gemini
+    agent: antigravity
     directive: "Focus on security and correctness."
   tester:
     directive_extend: "Also check edge cases for null inputs."
@@ -168,7 +168,7 @@ All 11 support both `directive` (full replace) and `directive_extend` (append to
 
 ## When to Use Profiles
 
-- **Speed-optimized** — use Gemini for implementation (faster output) and Claude for review (thorough analysis)
+- **Speed-optimized** — use Antigravity for implementation (faster output) and Claude for review (thorough analysis)
 - **Cost-optimized** — use a less expensive agent for testing and fixing, reserve the most capable agent for implementation
 - **Provider diversity** — spread work across providers to avoid rate limits on large plans
 - **Team consistency** — commit `.workbench/profile.yaml` to the repo so every team member uses the same agent configuration

@@ -62,6 +62,7 @@ wb run <plan.md> [options]
 | `--end-wave N` | Stop after wave N (default: last wave) |
 | `--retry-failed` | Auto-retry tasks that crashed (not those that exhausted fix retries) |
 | `--fail-fast` | Stop after the first wave with any failed tasks |
+| `--headroom` / `--no-headroom` | Route supported agents through a local Headroom proxy to reduce token costs |
 | `--only-incomplete` | Skip completed tasks from a prior run (requires `-b`) |
 | `--task ID` | Run only specific tasks by ID or slug (repeatable) |
 | `--cleanup` | Remove worktrees after completion |
@@ -425,7 +426,7 @@ wb setup [options]
 
 | Flag | Description |
 |---|---|
-| `--agent NAME` | Target platform: `claude`, `gemini`, `cursor`, `codex`, `copilot`, `manual` (auto-detected if omitted) |
+| `--agent NAME` | Target platform: `claude`, `antigravity`, `cursor`, `codex`, `copilot`, `manual` (auto-detected if omitted) |
 | `--global` | Install skills to user-level paths only (skip `.workbench/` creation) |
 | `--symlink` | Symlink instead of copy (stays in sync with package updates) |
 | `--profile` | Also create a profile.yaml with the detected agent |
@@ -491,7 +492,7 @@ When `--plan` is omitted, subcommands read and write `.workbench/agents.yaml` (t
 
 ### wb agents init
 
-Create `agents.yaml` pre-populated with configs for all built-in adapters (Claude, Gemini, Codex, Cursor, Copilot). Use as a starting point for customization.
+Create `agents.yaml` pre-populated with configs for all built-in adapters (Claude, Antigravity, Codex, Cursor, Copilot). Use as a starting point for customization.
 
 ```bash
 wb agents init [--repo PATH]
@@ -640,7 +641,7 @@ The key uses dot notation: `<role>.<field>` or `<role>.<sub_mode>.<field>`.
 Roles: `implementor`, `tester`, `reviewer`, `fixer`, `merger`, `planner`
 
 ```bash
-wb profile set implementor.agent gemini
+wb profile set implementor.agent antigravity
 wb profile set reviewer.agent claude
 wb profile set tester.tdd.directive "Use pytest fixtures for shared setup."
 wb profile set reviewer.followup.directive "Focus only on changes since last review."
