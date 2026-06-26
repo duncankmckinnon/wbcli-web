@@ -68,6 +68,9 @@ wb run <plan.md> [options]
 | `--keep-branches` | Keep task branches after merging (default: auto-delete on success) |
 | `--push` | Push the session branch to origin after merging (sets upstream tracking) |
 | `--final-review` | Run a whole-branch review after merges complete; opens a PR on PASS |
+| `--trace/--no-trace` | Master switch for session trace metadata (env + prompt). Default: on. |
+| `--trace-env/--no-trace-env` | Inject `WB_*`/OTEL trace env vars into agent processes. Default: on. |
+| `--trace-prompt/--no-trace-prompt` | Prepend a `wb-session` metadata block to agent prompts. Default: off. |
 | `--pr-title TEXT` | Override the PR title (default: plan H1, then plan id) |
 | `--pr-body-file PATH` | Use this file's content as the PR body |
 | `--pr-base BRANCH` | Override the PR base branch (default: session's recorded base) |
@@ -104,6 +107,9 @@ Plans may declare these keys in a YAML frontmatter block (`---` delimiters) at t
 | `keep_branches` | `--keep-branches` | bool |
 | `push` | `--push` | bool |
 | `final_review` | `--final-review` | bool |
+| `trace` | `--trace/--no-trace` | bool |
+| `trace_env` | `--trace-env/--no-trace-env` | bool |
+| `trace_prompt` | `--trace-prompt/--no-trace-prompt` | bool |
 
 See [Plan Frontmatter](/docs/plan-frontmatter) for the full format and examples.
 
@@ -220,6 +226,9 @@ At least one of a prompt or `--from` is required.
 | `--copy-settings` | Copy the current effective `profile.yaml` and `agents.yaml` into the plan folder |
 | `--agent CMD` | Agent CLI to run the planner (default: `claude`) |
 | `--no-tmux` | Run the planner as a subprocess instead of in tmux |
+| `--trace/--no-trace` | Master switch for session trace metadata (env + prompt). Default: on. |
+| `--trace-env/--no-trace-env` | Inject `WB_*`/OTEL trace env vars into the planner agent process. Default: on. |
+| `--trace-prompt/--no-trace-prompt` | Prepend a `wb-session` metadata block to the planner agent's prompt. Default: off. |
 | `--repo PATH` | Repository path (auto-detected if omitted) |
 
 ### Subcommands
@@ -298,6 +307,9 @@ wb merge -b <session-branch> [options]
 | `--pr-writer-directive TEXT` | Override the PR writer agent's instructions |
 | `--summarizer-directive TEXT` | Override the requirements summarizer agent's instructions |
 | `--branch-reviewer-directive TEXT` | Override the branch reviewer agent's instructions |
+| `--trace/--no-trace` | Master switch for session trace metadata (env + prompt). Default: on. |
+| `--trace-env/--no-trace-env` | Inject `WB_*`/OTEL trace env vars into agent processes. Default: on. |
+| `--trace-prompt/--no-trace-prompt` | Prepend a `wb-session` metadata block to agent prompts. Default: off. |
 | `--repo PATH` | Repository path (auto-detected if omitted) |
 
 ### Examples
@@ -348,6 +360,9 @@ wb final-review workbench-1 --pr-title "My feat"  # override PR metadata
 | `--branch-reviewer-directive TEXT` | Override the branch reviewer agent's instructions |
 | `--profile PATH` | Use a specific profile.yaml |
 | `--profile-name NAME` | Use a named profile |
+| `--trace/--no-trace` | Master switch for session trace metadata (env + prompt). Default: on. |
+| `--trace-env/--no-trace-env` | Inject `WB_*`/OTEL trace env vars into agent processes. Default: on. |
+| `--trace-prompt/--no-trace-prompt` | Prepend a `wb-session` metadata block to agent prompts. Default: off. |
 | `--repo PATH` | Repository path (auto-detected if omitted) |
 
 The `summarizer`, `branch_reviewer`, and `fixer` roles are configurable in `profile.yaml` like any other role (`agent`, `directive`). See [Profiles](/docs/profiles) and [Review & Pull Requests](/docs/review-pr-flow).
