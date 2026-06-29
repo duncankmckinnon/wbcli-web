@@ -111,6 +111,20 @@ Test command: `npx vitest run src/validators/email.test.ts`
 
 The TDD-optimized version gives the tester agent clear inputs and expected outputs, making it easy to write comprehensive tests without knowing the implementation approach.
 
+## Resuming TDD Runs
+
+TDD tasks support the same resume logic as normal pipeline tasks. When retrying a failed session, workbench skips TDD phases that already completed successfully.
+
+However, TDD resume requires **both** TDD phases (write-failing-tests and implement) to have completed in the prior run. If only the test-writing phase finished, workbench falls back to a clean start — a partially-complete implement stage may have left broken commits on the branch, and starting fresh avoids the TDD implementor inheriting a dirty working state.
+
+```bash
+# Resume a TDD session (re-runs any incomplete or failed tasks)
+wb resume workbench-1 --tdd
+
+# Retry crashed tasks in a TDD session
+wb run plan.md -b workbench-1 --tdd --retry-failed
+```
+
 ## When to Use TDD
 
 ### Good fit for TDD
