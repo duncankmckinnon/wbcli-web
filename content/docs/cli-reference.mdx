@@ -19,7 +19,7 @@ parent: getting-started
 | `wb setup` | Create `.workbench/`, install skills, and optionally create a profile |
 | `wb status` | Show active worktrees and final review status |
 | `wb stop` | Kill all running agent tmux sessions |
-| `wb clean` | Remove all workbench worktrees and `wb/` branches |
+| `wb clean [project]` | Remove workbench worktrees, branches, and status artifacts; `--purge` deletes entire plan directories |
 | `wb agents init` | Create agents.yaml with built-in adapter configs |
 | `wb agents list` | List built-in and custom agent adapters |
 | `wb agents show <name>` | Show details for an agent adapter |
@@ -458,18 +458,39 @@ wb stop [options]
 
 ## wb clean
 
-Remove all workbench-created git worktrees and `wb/` branches. Useful for reclaiming disk space after a run or cleaning up after interrupted sessions.
+Remove workbench-created git worktrees, `wb/` branches, and status artifacts. By default, only removes artifacts for plans where every task is done and merged. Pass `--force` to wipe everything, or `--purge` to delete entire plan directories.
 
 ```bash
-wb clean [options]
+wb clean [PROJECT] [options]
 ```
+
+`PROJECT` is the plan folder name under `.workbench/` (e.g. `wb clean my-plan`) or a path to the plan file (e.g. `wb clean .workbench/my-plan/plan.md`). When omitted, all plans are considered.
 
 ### Flags
 
 | Flag | Description |
 |---|---|
-| `--yes` | Skip confirmation prompt |
+| `--force` | Remove all worktrees and `wb/` branches, including in-flight ones |
+| `--completed` | Only remove artifacts for completed plans; skip in-flight ones silently |
+| `--remove-plans` | Also delete plan source markdown for completed plans |
+| `--dry-run` | Print what would be removed without removing anything |
+| `--purge` | Delete the entire `.workbench/<project>/` directory tree (or all plan subdirectories when no PROJECT is given), plus all associated git artifacts. Preserves root-level config files (`conventions.md`, `agents.yaml`, `profile.yaml`). Implies `--force`. |
 | `--repo PATH` | Repository path (auto-detected if omitted) |
+
+`--purge` and `--force` are mutually exclusive (purge implies force). `--purge` and `--completed` are also mutually exclusive.
+
+### Examples
+
+```bash
+wb clean                          # remove artifacts for all completed plans
+wb clean my-plan                  # scope cleanup to a single plan
+wb clean --force                  # wipe all worktrees and branches regardless of status
+wb clean --completed              # remove completed plans, silently skip in-flight ones
+wb clean --purge                  # delete all plan directories (preserves config files)
+wb clean my-plan --purge          # delete the entire .workbench/my-plan/ directory
+wb clean --purge --dry-run        # preview what --purge would delete
+wb clean --remove-plans           # also delete plan.md files for completed plans
+```
 
 ## wb agents
 
