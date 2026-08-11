@@ -10,16 +10,19 @@ order: 8
 
 ## What Are Skills?
 
-Skills are instruction files that teach your AI coding agent how to work with workbench. When installed, your agent can automatically install workbench, configure agents and profiles, and write execution plans — all from natural language prompts.
+Skills are instruction files that teach your AI coding agent how to work with workbench. When installed, your agent can automatically install workbench, configure agents and profiles, write execution plans, and drive the runs that execute them — all from natural language prompts.
 
-Workbench ships four skills:
+Workbench ships five skills:
 
 | Skill | Trigger | What it does |
 |---|---|---|
 | `install-workbench` | "Install workbench", "set up wb" | Guides the agent through prerequisites, installation, and `wb setup` |
 | `configure-workbench` | "Configure agents", "set up profiles" | Helps configure agent adapters, profiles, and troubleshoot dispatch |
-| `use-workbench` | "Write a plan", `/use-workbench` | Converts your ideas into workbench plans with proper task graphs |
+| `plan-workbench` | "Write a plan", `/plan-workbench` | Converts your ideas into workbench plans with proper task graphs |
+| `use-workbench` | "Run this plan", `/use-workbench` | Runs, resumes, and troubleshoots `wb` execution of an existing plan |
 | `generate-conventions` | "Generate conventions", `wb conventions init --generate` | Scans the codebase to draft `.workbench/conventions.md` shared by every agent |
+
+> **Writing vs. running:** these were one skill until workbench split them. `plan-workbench` owns the plan file — structure, frontmatter, task decomposition, file ownership. `use-workbench` owns execution — pipeline stages, waves, failure recovery, TDD mode. `wb plan` uses `plan-workbench` as its planning guide, so the CLI and the skill produce plans the same way.
 
 ## Installing Skills from the Download
 
@@ -42,6 +45,8 @@ This creates:
 │   └── SKILL.md
 ├── configure-workbench/
 │   └── SKILL.md
+├── plan-workbench/
+│   └── SKILL.md
 ├── use-workbench/
 │   └── SKILL.md
 └── generate-conventions/
@@ -54,6 +59,7 @@ This creates:
 mkdir -p .claude/skills
 cp -r .agents/skills/install-workbench .claude/skills/
 cp -r .agents/skills/configure-workbench .claude/skills/
+cp -r .agents/skills/plan-workbench .claude/skills/
 cp -r .agents/skills/use-workbench .claude/skills/
 cp -r .agents/skills/generate-conventions .claude/skills/
 ```
@@ -117,15 +123,15 @@ Ask your agent to draft a shared conventions file for the repo:
 
 The skill backs `wb conventions init --generate`: it surveys the codebase, captures language, framework, tooling, and style decisions, and writes the result to `.workbench/conventions.md`. Every workbench agent then loads that file automatically so plans and tasks share the same ground rules. See [Conventions](/docs/conventions) for the full file format.
 
-### use-workbench
+### plan-workbench
 
 **From an idea:** Ask your agent to write a plan from scratch:
 
 > "Write a workbench plan to add authentication to this app"
 
-> `/use-workbench`
+> `/plan-workbench`
 
-The agent will survey your codebase, design a task graph with proper dependencies and file ownership, and produce a ready-to-run plan.
+The agent will survey your codebase, design a task graph with proper dependencies and file ownership, and produce a ready-to-run plan at `.workbench/<name>/plan.md`.
 
 **From an existing plan:** You can also point the skill at an existing plan or spec to restructure it for workbench execution. This is useful when you have a rough plan, a design doc, or an implementation spec that isn't yet formatted for parallel agent dispatch:
 
@@ -135,12 +141,22 @@ The agent will survey your codebase, design a task graph with proper dependencie
 
 The agent reads the existing document, identifies independent units of work, determines file ownership to avoid merge conflicts, sets up dependency ordering across waves, and fills in the detail each task needs to be self-contained — function signatures, interfaces from earlier tasks, test commands, and edge cases. The result is a plan at the right level of specificity for agents that can only see their own task description.
 
-**Running the plan:** Once a plan is ready, the skill can also generate the `wb run` command with the right flags for your situation — TDD mode, specific base branches, named sessions, agent selection, directive overrides, and more:
+**CLI alternative:** If you prefer to generate a plan from the command line rather than from inside an agent session, use `wb plan "<prompt>"` or `wb plan --from <file>`. This dispatches a planner agent using the same `plan-workbench` guidance, but without needing an active agent session. See [CLI Reference](/docs/cli-reference#wb-plan).
+
+See [Plan Format](/docs/plan-format) for details on the structure it generates.
+
+### use-workbench
+
+**Running a plan:** Once a plan is ready, this skill generates the `wb run` command with the right flags for your situation — TDD mode, specific base branches, named sessions, agent selection, directive overrides, and more:
 
 > "Run this plan with Antigravity for implementation and Claude for review"
 
 > "Run plan.md in TDD mode on the feature-auth branch"
 
-**CLI alternative:** If you prefer to generate a plan from the command line rather than from inside an agent session, use `wb plan "<prompt>"` or `wb plan --from <file>`. This dispatches a planner agent the same way the skill does, but without needing an active agent session. See [CLI Reference](/docs/cli-reference#wb-plan).
+**Resuming and troubleshooting:** It also covers what to do when a run doesn't finish cleanly — which failures `wb resume` can pick up, how waves and branches are reused, and how to read the pipeline stages:
 
-See [Plan Format](/docs/plan-format) for details on the structure it generates.
+> "Wave 2 failed on the tester stage — how do I resume it?"
+
+> "Why did my run stop after the first wave?"
+
+See [Running Plans](/docs/running-plans) and [TDD Mode](/docs/tdd-mode) for the underlying behavior.

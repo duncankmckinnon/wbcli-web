@@ -73,14 +73,28 @@ If you have multiple agent platforms installed, workbench will ask you to choose
 $ wb setup
 Multiple agent platforms found. Choose one (claude, antigravity): claude
 Created /path/to/your/project/.workbench/
-Installing 1 command(s) for claude...
 
+Available skill file(s) for claude:
+  • configure-workbench
+  • generate-conventions
+  • install-workbench
+  • plan-workbench
+  • use-workbench
+
+Install all skills? [Y/n]: y
+
+Installing 5 skill file(s) for claude...
+
+  Copied /configure-workbench → /path/to/your/project/.claude/skills/configure-workbench
+  Copied /generate-conventions → /path/to/your/project/.claude/skills/generate-conventions
+  Copied /install-workbench → /path/to/your/project/.claude/skills/install-workbench
+  Copied /plan-workbench → /path/to/your/project/.claude/skills/plan-workbench
   Copied /use-workbench → /path/to/your/project/.claude/skills/use-workbench
 
-  Use in Claude Code: /use-workbench
+  Use in Claude Code: /plan-workbench
   Also installed to /path/to/your/project/.agents/skills for cross-client discoverability.
 
-Done. Installed 1 command(s) for claude.
+Done. Installed 5 skill file(s) for claude.
 
 Repo is ready for workbench.
 ```

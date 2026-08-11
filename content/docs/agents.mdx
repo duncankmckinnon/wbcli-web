@@ -6,17 +6,18 @@ order: 6
 
 ## Supported Agents
 
-Workbench ships with built-in adapters for seven agent CLIs, plus support for any custom CLI:
+Workbench ships with built-in adapters for eight agent CLIs, plus support for any custom CLI:
 
-| Agent | Command | Provider |
-|---|---|---|
-| Claude Code | `claude` | Anthropic |
-| Google Antigravity | `agy` | Google |
-| OpenCode | `opencode` | OpenCode |
-| Kimi Code | `kimi` | Moonshot AI |
-| OpenAI Codex | `codex` | OpenAI |
-| Cursor CLI | `agent` | Cursor |
-| Copilot CLI | `copilot` | GitHub |
+| Agent | `--agent` name | Command | Provider |
+|---|---|---|---|
+| Claude Code | `claude` | `claude` | Anthropic |
+| Claude Code (YOLO) | `claude-yolo` | `claude` | Anthropic |
+| Google Antigravity | `antigravity` | `agy` | Google |
+| OpenCode | `opencode` | `opencode` | OpenCode |
+| Kimi Code | `kimi` | `kimi` | Moonshot AI |
+| OpenAI Codex | `codex` | `codex` | OpenAI |
+| Cursor CLI | `cursor` | `agent` | Cursor |
+| Copilot CLI | `copilot` | `copilot` | GitHub |
 
 Each agent goes through the same pipeline stages: **implement → test → review → fix**. Workbench treats all agents as interchangeable — any agent can fill any role.
 
@@ -24,6 +25,7 @@ Use `--agent` to select which agent to use:
 
 ```bash
 wb run plan.md --agent claude        # default
+wb run plan.md --agent claude-yolo   # Claude Code with permission checks bypassed
 wb run plan.md --agent antigravity
 wb run plan.md --agent opencode
 wb run plan.md --agent kimi
@@ -31,6 +33,18 @@ wb run plan.md --agent codex
 wb run plan.md --agent cursor
 wb run plan.md --agent copilot
 ```
+
+### Permission modes
+
+Dispatched agents run unattended, so each adapter pins a non-interactive permission posture:
+
+| Adapter | Posture |
+|---|---|
+| `claude` | Restricted allowlist — `Edit`, `Write`, `Read`, `Glob`, `Grep`, plus `git`, `uv run`, `cd`, `ls`, and `npx` shell commands |
+| `claude-yolo` | Same CLI, invoked with `--dangerously-skip-permissions` — no tool allowlist at all |
+| `codex` | Invoked as `codex exec --dangerously-bypass-approvals-and-sandbox --json`, so Codex tasks can commit their own work |
+
+Reach for `claude-yolo` when a task needs tools outside the default allowlist — installing packages, running an unusual test harness, or driving a build script — and you trust the plan's tasks. It is the same `claude` binary, so authentication, models, and cost reporting behave identically.
 
 ## Setting Up Agents
 
@@ -67,7 +81,7 @@ wb agents add my-agent --command new-cli   # update an existing agent
 wb agents remove my-agent         # remove a custom agent
 ```
 
-`wb agents init` creates `.workbench/agents.yaml` pre-populated with the configs for all built-in adapters (Claude, Antigravity, OpenCode, Kimi, Codex, Cursor, Copilot). Use this as a starting point to customize command flags, output parsing, or to add your own agents.
+`wb agents init` creates `.workbench/agents.yaml` pre-populated with the configs for all built-in adapters (Claude, Claude YOLO, Antigravity, OpenCode, Kimi, Codex, Cursor, Copilot). Use this as a starting point to customize command flags, output parsing, or to add your own agents.
 
 ### Plan-scoped agents
 
@@ -201,7 +215,7 @@ agents:
 - **One shared proxy per `wb run`** — not one per agent.
 - **Auto-start** if nothing is listening on `port`; **reuse** an existing listener if there is one.
 - **Teardown** only what workbench started — an existing proxy keeps running.
-- **Wired today:** `claude` (overlays `ANTHROPIC_BASE_URL`) and `codex` (overlays `OPENAI_BASE_URL`).
+- **Wired today:** `claude` and `claude-yolo` (overlay `ANTHROPIC_BASE_URL`) and `codex` (overlays `OPENAI_BASE_URL`).
 - **Other adapters** run normally with a one-time warning until their base-URL overrides are verified.
 - **Missing binary?** Workbench logs a warning with the install hint and continues — a run never fails over a cost optimization.
 
