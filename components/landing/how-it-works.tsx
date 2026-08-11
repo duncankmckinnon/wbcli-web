@@ -67,11 +67,11 @@ const taskStages: Stage[] = [
 // Completion pipeline: runs once per session after task branches merge.
 // See content/docs/review-pr-flow.mdx for the agent roles behind each stage.
 const completionStages: Stage[] = [
-  { label: "summarize", type: "fixed" },
-  { label: "review", type: "fixed" },
+  { label: "collect requirements", type: "fixed" },
+  { label: "comprehensive review", type: "fixed" },
   { label: "fix", type: "optional" },
   { label: "merge", type: "fixed" },
-  { label: "open pr", type: "fixed" },
+  { label: "create PR", type: "fixed" },
 ];
 
 function Pipeline({ title, stages }: { title: string; stages: Stage[] }) {
