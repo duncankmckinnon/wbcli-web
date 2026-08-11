@@ -7,7 +7,7 @@ import { CodeExample } from "@/components/landing/code-example";
 export const metadata: Metadata = {
   title: "workbench — Ultra-lightweight multi-agent orchestrator",
   description:
-    "Dispatch AI coding agents in parallel across isolated git worktrees. Supports Claude Code, Gemini CLI, and Codex.",
+    "Dispatch AI coding agents in parallel across isolated git worktrees. Supports Claude Code, Antigravity, OpenCode, Kimi Code, Codex, Cursor, and Copilot.",
 };
 
 export default function LandingPage() {

@@ -6,7 +6,7 @@ set -e
 REPO="duncankmckinnon/workbench"
 BRANCH="main"
 BASE_URL="https://raw.githubusercontent.com/${REPO}/${BRANCH}/workbench/skills"
-SKILLS=("use-workbench" "configure-workbench" "install-workbench")
+SKILLS=("plan-workbench" "use-workbench" "configure-workbench" "install-workbench" "generate-conventions")
 
 TMPDIR=$(mktemp -d)
 trap "rm -rf $TMPDIR" EXIT

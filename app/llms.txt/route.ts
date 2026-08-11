@@ -13,7 +13,7 @@ export function GET() {
 
 > Ultra-lightweight multi-agent orchestrator for any setup. Write a plan. Run one command. AI agents build your code in parallel — across isolated git worktrees.
 
-workbench (\`wbcli\` on PyPI) is a Python CLI that dispatches AI coding agents in parallel across isolated git worktrees. Users write markdown plans with tasks, dependencies, and file ownership; workbench parses the plan into dependency waves, creates isolated worktrees, and runs each task through an implement → test → review → fix pipeline. Supports Claude Code, Gemini CLI, OpenAI Codex, Cursor CLI, and custom agent adapters.
+workbench (\`wbcli\` on PyPI) is a Python CLI that dispatches AI coding agents in parallel across isolated git worktrees. Users write markdown plans with tasks, dependencies, and file ownership; workbench parses the plan into dependency waves, creates isolated worktrees, and runs each task through an implement → test → review → fix pipeline. Supports Claude Code (standard and permission-bypassing \`claude-yolo\`), Google Antigravity, OpenCode, Kimi Code, OpenAI Codex, Cursor CLI, GitHub Copilot CLI, and custom agent adapters.
 
 ## Documentation
 
