@@ -51,17 +51,30 @@ const steps: { number: string; title: string; description: ReactNode; icon: Reac
   },
 ];
 
-const pipelineStages = [
-  { label: "test", type: "optional" as const },
-  { label: "implement", type: "fixed" as const },
-  { label: "test", type: "fixed" as const },
-  { label: "fix", type: "optional" as const },
-  { label: "review", type: "fixed" as const },
-  { label: "fix", type: "optional" as const },
-  { label: "merge", type: "fixed" as const },
+type Stage = { label: string; type: "fixed" | "optional" };
+
+// Per-task pipeline: every task branch runs these stages in its own worktree.
+const taskStages: Stage[] = [
+  { label: "test", type: "optional" },
+  { label: "implement", type: "fixed" },
+  { label: "test", type: "fixed" },
+  { label: "fix", type: "optional" },
+  { label: "review", type: "fixed" },
+  { label: "fix", type: "optional" },
+  { label: "merge", type: "fixed" },
 ];
 
-export function HowItWorks() {
+// Completion pipeline: runs once per session after task branches merge.
+// See content/docs/review-pr-flow.mdx for the agent roles behind each stage.
+const completionStages: Stage[] = [
+  { label: "summarize", type: "fixed" },
+  { label: "review", type: "fixed" },
+  { label: "fix", type: "optional" },
+  { label: "merge", type: "fixed" },
+  { label: "open pr", type: "fixed" },
+];
+
+function Pipeline({ title, stages }: { title: string; stages: Stage[] }) {
   const pipelineRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
 
@@ -82,8 +95,65 @@ export function HowItWorks() {
     return () => window.removeEventListener("scroll", update);
   }, []);
 
-  const visibleCount = Math.ceil(progress * pipelineStages.length);
+  const visibleCount = Math.ceil(progress * stages.length);
 
+  return (
+    <div ref={pipelineRef}>
+      <h3 className="text-center text-lg font-semibold text-brand-text-secondary mb-8">
+        {title}
+      </h3>
+      <div className="flex items-center justify-center gap-2 sm:gap-3 flex-wrap">
+        {stages.map((stage, i) => {
+          const visible = i < visibleCount;
+          const isOptional = stage.type === "optional";
+
+          return (
+            <div key={`${stage.label}-${i}`} className="flex items-center gap-2 sm:gap-3">
+              {/* Stage node */}
+              <div
+                className={`
+                  flex items-center justify-center rounded-xl px-5 py-3 sm:px-6 sm:py-3.5 text-sm sm:text-base font-mono font-semibold
+                  transition-all duration-500 ease-out
+                  ${visible
+                    ? isOptional
+                      ? "bg-brand-accent-secondary/15 border-2 border-brand-accent-secondary/40 text-brand-accent-tertiary border-dashed"
+                      : "bg-brand-accent-primary/15 border-2 border-brand-accent-primary/40 text-brand-accent-primary"
+                    : "bg-brand-bg-tertiary/30 border-2 border-brand-bg-tertiary/50 text-brand-text-muted/30"
+                  }
+                `}
+              >
+                {stage.label}
+              </div>
+
+              {/* Arrow between stages */}
+              {i < stages.length - 1 && (
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 16 16"
+                  className={`shrink-0 transition-all duration-500 ${
+                    visible ? "text-brand-accent-primary/60" : "text-brand-bg-tertiary/30"
+                  }`}
+                >
+                  <path
+                    d="M3 8h8M8 4l4 4-4 4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+export function HowItWorks() {
   return (
     <section className="px-6 py-24 lg:px-8">
       <div className="mx-auto max-w-5xl">
@@ -124,58 +194,10 @@ export function HowItWorks() {
           </div>
         </div>
 
-        {/* Pipeline visualization */}
-        <div ref={pipelineRef} className="mt-20">
-          <h3 className="text-center text-lg font-semibold text-brand-text-secondary mb-8">
-            The agent pipeline
-          </h3>
-          <div className="flex items-center justify-center gap-2 sm:gap-3 flex-wrap">
-            {pipelineStages.map((stage, i) => {
-              const visible = i < visibleCount;
-              const isOptional = stage.type === "optional";
-
-              return (
-                <div key={`${stage.label}-${i}`} className="flex items-center gap-2 sm:gap-3">
-                  {/* Stage node */}
-                  <div
-                    className={`
-                      flex items-center justify-center rounded-xl px-5 py-3 sm:px-6 sm:py-3.5 text-sm sm:text-base font-mono font-semibold
-                      transition-all duration-500 ease-out
-                      ${visible
-                        ? isOptional
-                          ? "bg-brand-accent-secondary/15 border-2 border-brand-accent-secondary/40 text-brand-accent-tertiary border-dashed"
-                          : "bg-brand-accent-primary/15 border-2 border-brand-accent-primary/40 text-brand-accent-primary"
-                        : "bg-brand-bg-tertiary/30 border-2 border-brand-bg-tertiary/50 text-brand-text-muted/30"
-                      }
-                    `}
-                  >
-                    {stage.label}
-                  </div>
-
-                  {/* Arrow between stages */}
-                  {i < pipelineStages.length - 1 && (
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 16 16"
-                      className={`shrink-0 transition-all duration-500 ${
-                        visible ? "text-brand-accent-primary/60" : "text-brand-bg-tertiary/30"
-                      }`}
-                    >
-                      <path
-                        d="M3 8h8M8 4l4 4-4 4"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+        {/* Pipeline visualizations */}
+        <div className="mt-20 space-y-16">
+          <Pipeline title="The agent pipeline for each task" stages={taskStages} />
+          <Pipeline title="The agent pipeline on completion" stages={completionStages} />
         </div>
       </div>
     </section>
