@@ -72,6 +72,14 @@ export function Nav() {
             Docs
           </Link>
           <a
+            href="https://thrdi.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm text-brand-text-secondary hover:text-brand-text-primary transition-colors"
+          >
+            thirdeye
+          </a>
+          <a
             href="https://github.com/duncankmckinnon/workbench"
             target="_blank"
             rel="noopener noreferrer"
@@ -120,6 +128,15 @@ export function Nav() {
             >
               Docs
             </Link>
+            <a
+              href="https://thrdi.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-brand-text-secondary hover:text-brand-text-primary transition-colors"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              thirdeye
+            </a>
             <a
               href="https://github.com/duncankmckinnon/workbench"
               target="_blank"

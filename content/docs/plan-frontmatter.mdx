@@ -40,6 +40,8 @@ Each frontmatter key maps to a CLI flag on [`wb run`](/docs/cli-reference#wb-run
 
 > **Tip:** `session_branch` and `name` are aliases for the same field — use whichever reads better in your plan.
 
+`trace_env` supplies `WB_*` metadata to agent processes. See the [thirdeye integration](/docs/thirdeye) to turn that metadata into searchable trace tags.
+
 ## Precedence
 
 When the same setting is provided in more than one place, workbench resolves it in this order:

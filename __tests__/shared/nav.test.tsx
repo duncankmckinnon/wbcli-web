@@ -33,6 +33,15 @@ describe("Nav", () => {
     expect(desktopDocsLink).toHaveAttribute("href", "/docs");
   });
 
+  it("renders the thirdeye website link in desktop navigation", () => {
+    render(<Nav />);
+    const thirdeyeLinks = screen.getAllByText("thirdeye");
+    const desktopLink = thirdeyeLinks[0].closest("a");
+    expect(desktopLink).toHaveAttribute("href", "https://thrdi.com");
+    expect(desktopLink).toHaveAttribute("target", "_blank");
+    expect(desktopLink).toHaveAttribute("rel", "noopener noreferrer");
+  });
+
   it("renders the GitHub icon link with correct URL and target", () => {
     render(<Nav />);
     const githubLink = screen.getByLabelText("GitHub");
@@ -128,6 +137,18 @@ describe("Nav", () => {
       "https://github.com/duncankmckinnon/workbench"
     );
     expect(githubLink.closest("a")).toHaveAttribute("target", "_blank");
+  });
+
+  it("mobile dropdown contains the thirdeye website link", async () => {
+    const user = userEvent.setup();
+    render(<Nav />);
+
+    await user.click(screen.getByLabelText("Open menu"));
+
+    const thirdeyeLinks = screen.getAllByText("thirdeye");
+    const mobileLink = thirdeyeLinks[thirdeyeLinks.length - 1].closest("a");
+    expect(mobileLink).toHaveAttribute("href", "https://thrdi.com");
+    expect(mobileLink).toHaveAttribute("target", "_blank");
   });
 
   it("uses 'use client' directive", async () => {

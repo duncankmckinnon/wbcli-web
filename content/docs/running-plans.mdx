@@ -24,6 +24,8 @@ wb run plan.md --no-tmux
 
 This runs agents as subprocesses instead. Output is still captured but you can't attach to individual sessions.
 
+For searchable traces across runs, [connect workbench to thirdeye](/docs/thirdeye). Each agent session can be tagged automatically by plan, wave, task, role, and exact pipeline step.
+
 ## Selective Execution
 
 Plans don't have to run end-to-end. Workbench can target individual waves, ranges, or specific tasks. Most of these commands accept a plan name (the folder slug under `.workbench/`) in place of a path — `wb run myplan` resolves to `.workbench/myplan/plan.md`.
