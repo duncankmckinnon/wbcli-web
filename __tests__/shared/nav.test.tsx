@@ -37,7 +37,7 @@ describe("Nav", () => {
     render(<Nav />);
     const thirdeyeLinks = screen.getAllByText("thirdeye");
     const desktopLink = thirdeyeLinks[0].closest("a");
-    expect(desktopLink).toHaveAttribute("href", "https://thrdi.com");
+    expect(desktopLink).toHaveAttribute("href", "https://third3y3.com/");
     expect(desktopLink).toHaveAttribute("target", "_blank");
     expect(desktopLink).toHaveAttribute("rel", "noopener noreferrer");
   });
@@ -147,7 +147,7 @@ describe("Nav", () => {
 
     const thirdeyeLinks = screen.getAllByText("thirdeye");
     const mobileLink = thirdeyeLinks[thirdeyeLinks.length - 1].closest("a");
-    expect(mobileLink).toHaveAttribute("href", "https://thrdi.com");
+    expect(mobileLink).toHaveAttribute("href", "https://third3y3.com/");
     expect(mobileLink).toHaveAttribute("target", "_blank");
   });
 

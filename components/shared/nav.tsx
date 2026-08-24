@@ -72,7 +72,7 @@ export function Nav() {
             Docs
           </Link>
           <a
-            href="https://thrdi.com"
+            href="https://third3y3.com/"
             target="_blank"
             rel="noopener noreferrer"
             className="text-sm text-brand-text-secondary hover:text-brand-text-primary transition-colors"
@@ -129,7 +129,7 @@ export function Nav() {
               Docs
             </Link>
             <a
-              href="https://thrdi.com"
+              href="https://third3y3.com/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-brand-text-secondary hover:text-brand-text-primary transition-colors"
