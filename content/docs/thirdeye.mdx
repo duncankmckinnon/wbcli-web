@@ -41,7 +41,16 @@ thirdeye lowercases each captured value and prefixes it with the `WB_` field nam
 
 Task-pipeline sessions normally receive all five tags. Standalone stages such as planning, final review, and PR writing do not have a wave or task, so they receive only the metadata that applies.
 
-Tags are attached automatically to the session-start event. Spaces and unsupported punctuation become dashes; valid `_`, `.`, `-`, and `#` characters are preserved. Invalid or longer-than-64-character tags are skipped.
+Tags are attached automatically to the session-start event. Spaces and unsupported punctuation become dashes; valid `_`, `.`, `-`, and `#` characters are preserved. Invalid or longer-than-64-character tags are skipped. With Logfire export enabled, the same values also travel to the trace as span attributes — see [In Logfire](#in-logfire) below.
+
+## In Logfire
+
+The tags above are local thirdeye annotations. When thirdeye's Logfire export is enabled, the same `WB_*` values also ride on the exported trace:
+
+- Every span, from the session root down to individual tool calls, carries a `wb.*` attribute for each variable — `WB_PLAN` becomes `wb.plan`, and likewise `wb.wave`, `wb.task`, `wb.agent`, and `wb.step` — holding the raw value with its original case and characters.
+- The session span additionally carries each non-empty value as a value-only Logfire tag (`auth-refactor`, `tester`, `test#1`), deduplicated across the trace.
+
+Workbench used to pass this through `OTEL_RESOURCE_ATTRIBUTES`, but Claude Code overwrites that variable on its own spans, so the individual `WB_*` variables are the supported path. See thirdeye's [Workbench integration](https://third3y3.com/docs/workbench) docs for the export detail.
 
 ## Pipeline step tags
 
