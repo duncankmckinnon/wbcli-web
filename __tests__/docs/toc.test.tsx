@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, act } from "@testing-library/react";
 import { TableOfContents } from "@/components/docs/toc";
 
 // Mock IntersectionObserver
@@ -129,16 +129,19 @@ describe("TableOfContents", () => {
 
     render(<TableOfContents headings={sampleHeadings} />);
 
-    // Simulate intersection
-    observerCallback(
-      [
-        {
-          isIntersecting: true,
-          target: document.getElementById("configuration")!,
-        } as unknown as IntersectionObserverEntry,
-      ],
-      {} as IntersectionObserver
-    );
+    // Simulate intersection. Wrap in act() because the observer callback
+    // triggers a state update in the component.
+    act(() => {
+      observerCallback(
+        [
+          {
+            isIntersecting: true,
+            target: document.getElementById("configuration")!,
+          } as unknown as IntersectionObserverEntry,
+        ],
+        {} as IntersectionObserver
+      );
+    });
 
     const configLink = screen.getByText("Configuration");
     expect(configLink.className).toContain("text-brand-accent-primary");

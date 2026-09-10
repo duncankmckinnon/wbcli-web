@@ -83,6 +83,7 @@ export function Nav() {
             href="https://github.com/duncankmckinnon/workbench"
             target="_blank"
             rel="noopener noreferrer"
+            aria-label="GitHub"
             className="inline-flex items-center gap-1.5 text-sm text-brand-text-secondary hover:text-brand-text-primary transition-colors"
           >
             <GitHubIcon />

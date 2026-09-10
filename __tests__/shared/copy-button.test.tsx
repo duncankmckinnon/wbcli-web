@@ -5,8 +5,11 @@ import { CopyButton } from "@/components/shared/copy-button";
 
 describe("CopyButton", () => {
   beforeEach(() => {
-    Object.assign(navigator, {
-      clipboard: {
+    // jsdom defines navigator.clipboard as a getter-only property, so it
+    // must be replaced with defineProperty rather than Object.assign.
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: {
         writeText: vi.fn().mockResolvedValue(undefined),
       },
     });
@@ -42,13 +45,14 @@ describe("CopyButton", () => {
 
   it("copies text to clipboard when clicked", async () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    // userEvent.setup() installs its own navigator.clipboard stub, so spy on
+    // that rather than the vi.fn() from beforeEach.
+    const writeText = vi.spyOn(navigator.clipboard, "writeText");
     render(<CopyButton text="pip install wbcli" />);
 
     await user.click(screen.getByRole("button"));
 
-    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-      "pip install wbcli"
-    );
+    expect(writeText).toHaveBeenCalledWith("pip install wbcli");
   });
 
   it("shows checkmark icon after copying", async () => {

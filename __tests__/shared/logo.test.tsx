@@ -20,27 +20,16 @@ describe("Logo", () => {
     expect(link).toHaveAttribute("href", "/");
   });
 
-  it("renders an SVG icon with gradient", () => {
-    const { container } = render(<Logo />);
-    const svg = container.querySelector("svg");
-    expect(svg).toBeInTheDocument();
-    expect(svg).toHaveAttribute("aria-hidden", "true");
-
-    const gradient = container.querySelector("linearGradient");
-    expect(gradient).toBeInTheDocument();
-
-    const stops = container.querySelectorAll("stop");
-    expect(stops).toHaveLength(2);
-    expect(stops[0]).toHaveAttribute("stop-color", "#6366f1");
-    expect(stops[1]).toHaveAttribute("stop-color", "#8b5cf6");
+  it("renders the logo image with alt text", () => {
+    render(<Logo />);
+    const img = screen.getByAltText("workbench logo");
+    expect(img).toBeInTheDocument();
   });
 
-  it("renders a rounded rect with the gradient fill", () => {
-    const { container } = render(<Logo />);
-    const rect = container.querySelector("rect");
-    expect(rect).toBeInTheDocument();
-    expect(rect).toHaveAttribute("rx", "6");
-    expect(rect).toHaveAttribute("fill", "url(#logo-gradient)");
+  it("renders the logo image with rounded corners", () => {
+    render(<Logo />);
+    const img = screen.getByAltText("workbench logo");
+    expect(img.className).toContain("rounded-md");
   });
 
   it("accepts a className prop", () => {
