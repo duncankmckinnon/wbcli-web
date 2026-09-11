@@ -106,6 +106,8 @@ agents:
     output_format: json
     json_result_key: result
     json_cost_key: cost_usd
+    inject_env: true
+    model_flag: "--model"
 ```
 
 ## Custom Agents
@@ -140,6 +142,9 @@ The `{prompt}` placeholder in `args` is replaced with the agent's prompt at runt
 | `output_format` | How to parse the agent's output (`text` or `json`) |
 | `json_result_key` | When `output_format` is `json`, the key containing the agent's response |
 | `json_cost_key` | When `output_format` is `json`, the key containing the cost (optional) |
+| `inject_env` | Whether to inject workbench run metadata (`WB_PLAN`, `WB_WAVE`, `WB_TASK`, `WB_AGENT`, `WB_STEP`) as environment variables into the agent process. When overriding a built-in agent by name (e.g. `claude`, `codex`), defaults to the built-in's value (`true`). For new custom agents, defaults to `false` (opt-in). An explicit `inject_env: false` always wins. |
+| `model` | Optional model identifier to pass to the agent CLI (e.g. `claude-opus-4-5`) |
+| `model_flag` | CLI flag used to pass the model to the command (e.g. `--model`). Required for model selection to work |
 
 ### wb agents add Flags
 
